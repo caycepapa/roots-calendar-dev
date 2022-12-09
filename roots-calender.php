@@ -77,11 +77,11 @@ function rc_calset_form($post){
     <?php
 }
 
-/**
- * データの保存処理
- */
+/* 
+データ保存
+---------------------------------------------- */
 function save_custom_fields($post_id){
-    //nounceがセットされているか確認
+
     if (!isset($_POST['custom_field_meta_box_nonce'])) {
         return;
     }
