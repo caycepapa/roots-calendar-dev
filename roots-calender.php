@@ -70,6 +70,7 @@ class RootsCalender{
             global $wpdb;
             $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
 
+            // setting add
             if(isset($_POST['event_name']) || isset($_POST['event_color'])){
                 $wpdb->insert(
                     $table_name,
@@ -80,6 +81,29 @@ class RootsCalender{
                 );
             }
 
+            // setting update
+            if(isset($_POST['cal_setting'])){
+                $cal_settings = $_POST['cal_setting'];
+                foreach($cal_settings as $cal_setting){
+                    if($cal_setting['delete']){
+                        $wpdb->delete(
+                            $table_name,
+                            array( 'id' =>  $cal_setting['event_id']) 
+                        );
+                    }else{
+                        $wpdb->update(
+                            $table_name,
+                            array(
+                                'event_name' => $cal_setting['event_name'],
+                                'event_color' => $cal_setting['event_color'],
+                            ),
+                            array( 'id' =>  $cal_setting['event_id']) 
+                        );
+                    }
+                }
+            }
+
+            // setting view
             $records = $wpdb->get_results("SELECT * FROM ".$table_name);
             ?>
             <div class="wrap">
@@ -93,15 +117,24 @@ class RootsCalender{
                 </form>
                 <h2>一覧</h2>
                 <div>
+                    <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
                     <?php
                         $records = json_decode(json_encode($records), true);
                         foreach($records as $record):
                     ?>
-
-                            <div><?php echo $record['id'];?> <?php echo $record['event_name'];?> <?php echo $record['event_color'];?></div>
+                            <div>
+                                <input type="text" name="cal_setting[<?php echo $record['id'];?>][event_name]" value="<?php echo $record['event_name'];?>">
+                                <input type="color" name="cal_setting[<?php echo $record['id'];?>][event_color]" value="<?php echo $record['event_color'];?>">
+                                <input type="hidden" name="cal_setting[<?php echo $record['id'];?>][event_id]" value="<?php echo $record['id'];?>">
+                                <label><input type="checkbox" name="cal_setting[<?php echo $record['id'];?>][delete]">削除</label>
+                            </div>
                     <?php
                         endforeach;
                     ?>
+                    <div>
+                        <input type="submit" value="更新">
+                    </div>
+                    </form>
                 </div>
             </div>
             <?php
