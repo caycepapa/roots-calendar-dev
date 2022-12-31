@@ -141,7 +141,7 @@ class RootsCalender{
         }
 
         /* 
-        カレンダーメニュー表示
+        メニュー表示
         ---------------------------------------------- */
         function rc_add_page() {
             register_post_type( RC_Config::NAME ,
@@ -166,52 +166,10 @@ class RootsCalender{
         add_action('init', 'rc_add_page');
 
         /* 
-        カレンダーページカスタムフィールド
+        カレンダー登録画面
         ---------------------------------------------- */
-        function rc_create_custom_fields(){
-            add_meta_box(
-                'rc_calset',
-                '休日・イベント設定',
-                'rc_calset_form',
-                RC_Config::NAME,
-                'normal',
-                'default',
-            );
-        }
-        add_action('admin_menu', 'rc_create_custom_fields');
-
-        function rc_calset_form($post){
-
-            wp_nonce_field('custom_field_save_meta_box_data', 'custom_field_meta_box_nonce');
-
-            $rc_date01 = get_post_meta($post->ID, 'rc_date01', true);
-
-            ?>
-                <input type="date" name="rc_date01" value="<?php echo $rc_date01; ?>">
-            <?php
-        }
-
-
-        /* 
-        データ保存
-        ---------------------------------------------- */
-        function save_custom_fields($post_id){
-
-            if (!isset($_POST['custom_field_meta_box_nonce'])) {
-                return;
-            }
-
-            if (!wp_verify_nonce($_POST['custom_field_meta_box_nonce'], 'custom_field_save_meta_box_data')) {
-                return;
-            }
-
-            if (isset($_POST['rc_date01'])) {
-                $data = sanitize_text_field($_POST['rc_date01']);
-                update_post_meta($post_id, 'rc_date01', $data);
-            }
-
-        }
-        add_action('save_post', 'save_custom_fields');
+        include_once( plugin_dir_path( __FILE__ ) . 'classes/calender.php' );
+        new CalenderPostView();
 
     }
 
