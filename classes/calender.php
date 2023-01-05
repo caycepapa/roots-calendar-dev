@@ -47,34 +47,7 @@ class CalenderPostView{
         ?>
             <h1><?php echo $this_month;?>月</h1>
             <p>今月は<?php echo $this_day;?></p>
-            <input type="date" name="rc_date01" value="<?php echo $rc_date01; ?>">
-            <table>
-                <tr>
-                    <th>日付</th>
-                    <th>タイプ</th>
-                    <th>表示テキスト</th>
-                    <th>URL</th>
-                </tr>
-                <?php for($i = 1; $i < $this_day; $i++):?>
-                <tr>
-                    <td>
-                        <?php echo $this_month;?>/<?php echo $i;?>
-                    </td>
-                    <td>
-                        <select name="data[type]">
-                            <option value="イベント">イベント</option>
-                        </select>
-                    </td>
-                    <td>
-                        <input name="data[text]" type="text" name="text">
-                    </td>
-                    <td>
-                        <input type="text" name="data[link]">
-                        <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-'.$i;?>" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
-                    </td>
-                </tr>
-                <?php endfor;?>
-            </table>
+            <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-';?>1-2" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
         <?php
     }
 
@@ -91,10 +64,12 @@ class CalenderPostView{
         if (!wp_verify_nonce($_POST['custom_field_meta_box_nonce'], 'custom_field_save_meta_box_data')) {
             return;
         }
-
-        if (isset($_POST['rc_date_2022-2-1'])) {
-            $data = sanitize_text_field($_POST['rc_date_2022-2-1']);
-            update_post_meta($post_id, 'rc_date_2022-2-1', $data);
+        //var_dump($_POST);
+        foreach($_POST as $key => $value){
+            if(preg_match('/rc_date_/', $key)){
+                $data = sanitize_text_field($_POST[$key]);
+                update_post_meta($post_id, $key , $data);
+            }
         }
 
     }
