@@ -22,7 +22,13 @@ class CalenderPostView{
 
         wp_nonce_field('custom_field_save_meta_box_data', 'custom_field_meta_box_nonce');
 
-        $rc_date01 = get_post_meta($post->ID, 'rc_date01', true);
+        global $wpdb;
+
+        $sql = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_date_%'";
+
+        $rc_date = $wpdb->get_results($sql,OBJECT);
+
+        echo $rc_date[0]->meta_value;
 
         $month  = '2';
         $year   = '2022';
@@ -38,16 +44,13 @@ class CalenderPostView{
         }else{
             $this_year = $year;
         }
-        
-        
-        $date_str = $this_year.'-'.$this_month.'-01';
-        echo $date_str;
-        $this_day   = date('t', strtotime($date_str));
+
+        // その月の日数
+        $this_day = date('t', strtotime($date_str));
 
         ?>
             <h1><?php echo $this_month;?>月</h1>
-            <p>今月は<?php echo $this_day;?></p>
-            <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-';?>1-2" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
+            <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-';?>1-1" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
         <?php
     }
 
