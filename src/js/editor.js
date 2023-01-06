@@ -2,9 +2,9 @@
 
 import { gsap } from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
-import faq from './modules/faq';
+import editor_init from "./modules/editor-init";
 
 /* ///////////////////////
 init
 /////////////////////// */
-faq();
+editor_init();

@@ -6,7 +6,7 @@ class CalenderPostView{
         add_action('admin_menu', array($this,'rc_create_custom_fields'));
         add_action('save_post', array($this,'save_custom_fields'));
     }
-
+    
     function rc_create_custom_fields(){
         add_meta_box(
             'rc_calset',
@@ -50,6 +50,10 @@ class CalenderPostView{
 
         ?>
             <h1><?php echo $this_month;?>月</h1>
+            <div name="calContainer">
+                <div name="calBox">あ
+                </div>
+            </div>
             <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-';?>1-1" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
         <?php
     }

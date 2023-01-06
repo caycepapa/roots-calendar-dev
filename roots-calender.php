@@ -165,6 +165,15 @@ class RootsCalender{
         }
         add_action('init', 'rc_add_page');
 
+        function rc_load_scripts() {
+            echo 'test';
+            wp_enqueue_script(
+                'editor_script',
+                plugins_url( '', __FILE__ ) . '/editor.js',
+            );
+        }
+        add_action('admin_print_footer_scripts','rc_load_scripts');
+
         /* 
         カレンダー登録画面
         ---------------------------------------------- */
