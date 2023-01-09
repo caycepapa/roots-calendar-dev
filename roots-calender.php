@@ -166,13 +166,20 @@ class RootsCalender{
         add_action('init', 'rc_add_page');
 
         function rc_load_scripts() {
-            echo 'test';
             wp_enqueue_script(
                 'editor_script',
                 plugins_url( '', __FILE__ ) . '/editor.js',
             );
         }
         add_action('admin_print_footer_scripts','rc_load_scripts');
+
+        function rc_load_style() {
+            wp_enqueue_style(
+                'editor_style',
+                plugins_url( '', __FILE__ ) . '/editor.css',
+            );
+        }
+        add_action('admin_print_styles','rc_load_style');
 
         /* 
         カレンダー登録画面

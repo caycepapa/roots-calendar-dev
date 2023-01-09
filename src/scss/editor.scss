@@ -1,0 +1,42 @@
+@charset 'utf-8';
+
+.rc_calbox{
+    table{
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th{
+        border: 1px solid #CCC;
+    }
+
+    td{
+        height: 80px;
+        position: relative;
+        vertical-align: top;
+        border: 1px solid #CCC;
+        padding: 4px;
+
+        input{
+            display: inline-block;
+            position: absolute;
+            right: 4px;
+            top: 4px;
+        }
+    }
+
+    .rc_addbtn{
+        display: block;
+        width: 100%;
+        background: #DDD;
+        border: 1px solid #999;
+        text-align: center;
+        cursor: pointer;
+        color: #000;
+        margin-top: 2px;
+
+        &:hover{
+            background: #AAA;
+        }
+    }
+}

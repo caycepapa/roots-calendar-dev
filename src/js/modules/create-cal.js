@@ -66,6 +66,7 @@ export function createFunc(){
         var endDate = new Date(year, month + 1, 0).getDate();
         var lastMonthEndDate = new Date(year, month, 0).getDate();
         var row = Math.ceil((startDayOfWeek + endDate) / week.length);
+        var buttonInnerDom = "<a class='rc_addbtn'>+</a><input type='checkbox' name='allset'>";
 
         for (var i = 0; i < row; i++) {
             calendar += "<tr>";
@@ -83,7 +84,7 @@ export function createFunc(){
                         var counta = count;
                         var montha = month + 1;
                         counta = counta.toString().padStart(2,'0');
-                        calendar += "<td><a name='calDay' data-date="+year+""+montha+""+counta+">" + count + "</a></td>";
+                        calendar += "<td>" + count + buttonInnerDom + "</td>";
                     }else if(year == today.getFullYear() && month == (today.getMonth()) && count < today.getDate()){
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');
@@ -95,11 +96,11 @@ export function createFunc(){
                         if(month + 1 <= 12){
                             var montha = month + 1;
                             montha = montha.toString().padStart(2,'0');
-                            calendar += "<td><a name='calDay' data-date="+year+""+montha+""+counta+">" + count + "</a></td>";
+                            calendar += "<td>" + count + buttonInnerDom + "</td>";
                         }else{
                             var montha = month + 1 - 12;
                             montha = montha.toString().padStart(2,'0');
-                            calendar += "<td><a name='calDay' data-date="+(year+1)+""+montha+""+counta+">" + count + "</a></td>";
+                            calendar += "<td>>" + count + buttonInnerDom + "</td>";
                         }
                     }
                 }
