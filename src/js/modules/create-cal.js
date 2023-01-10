@@ -6,15 +6,16 @@ export function createFunc(){
 
     const week = ["日", "月", "火", "水", "木", "金", "土"];
     const today = new Date();
-    var showDate = new Date(today.getFullYear(), today.getMonth(), 1);
-    var currentMonth = 0;
+    var showNum = 12;
 
     showProcess(today);
 
+    /*-----------------------------------------
+    年間カレンダー作成
+    -----------------------------------------*/
     function showProcess(date) {
         var year = date.getFullYear();
         var month = date.getMonth();
-        var showNum = 12;
 
         for(let i = 0; i <showNum ; i++ ){
 
@@ -34,23 +35,11 @@ export function createFunc(){
             calBoxInner.appendChild(calBoxTable);
             calBox.appendChild(calBoxInner);
         }
-
-        // calDay = document.getElementsByName('calDay');
-
-        // for(let i = 0; i < calDay.length; i++){
-        //     calDay[i].addEventListener('click',function(){
-        //         if(calDay[i].classList.contains('is-selected')){
-        //             removeDay(calDay[i].dataset.date);
-        //             removeInputHidden(calDay[i].dataset.date);
-        //         }else{
-        //             createDay(calDay[i].dataset.date);
-        //             createInputHidden(calDay[i].dataset.date);
-        //             createSelected(calDay[i].dataset.date);
-        //         }
-        //     })
-        // }
     }
 
+    /*-----------------------------------------
+    カレンダーテーブル生成
+    -----------------------------------------*/
     function createProcess(year, month) {
 
         var calendar = "<tr class='dayOfWeek'>";
@@ -66,7 +55,10 @@ export function createFunc(){
         var endDate = new Date(year, month + 1, 0).getDate();
         var lastMonthEndDate = new Date(year, month, 0).getDate();
         var row = Math.ceil((startDayOfWeek + endDate) / week.length);
-        var buttonInnerDom = "<a class='rc_addbtn'>+</a><input type='checkbox' name='allset'>";
+
+        var buttonDomCreate = function(year,month,day){
+            return "<a class='rc_addbtn' data-date='" + year + "-" + month + "-" + day + "'>+</a><input type='checkbox' name='allset'>";
+        }
 
         for (var i = 0; i < row; i++) {
             calendar += "<tr>";
@@ -84,7 +76,7 @@ export function createFunc(){
                         var counta = count;
                         var montha = month + 1;
                         counta = counta.toString().padStart(2,'0');
-                        calendar += "<td>" + count + buttonInnerDom + "</td>";
+                        calendar += "<td>" + count + buttonDomCreate(year,month,counta) + "</td>";
                     }else if(year == today.getFullYear() && month == (today.getMonth()) && count < today.getDate()){
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');
@@ -96,11 +88,11 @@ export function createFunc(){
                         if(month + 1 <= 12){
                             var montha = month + 1;
                             montha = montha.toString().padStart(2,'0');
-                            calendar += "<td>" + count + buttonInnerDom + "</td>";
+                            calendar += "<td>" + count + buttonDomCreate(year,montha,counta) + "</td>";
                         }else{
                             var montha = month + 1 - 12;
                             montha = montha.toString().padStart(2,'0');
-                            calendar += "<td>>" + count + buttonInnerDom + "</td>";
+                            calendar += "<td>>" + count + buttonDomCreate(year,montha,counta) + "</td>";
                         }
                     }
                 }
@@ -109,6 +101,29 @@ export function createFunc(){
         }
 
         return calendar;
+    }
+
+    // 生成したカレンダーのプラスボタンをクリックイベント
+    function rcBtnAction(){
+        var rc_addbtn = document.getElementsByClassName('rc_addbtn');
+
+        for(let i = 0; i < rc_addbtn.length; i++){
+            rc_addbtn[i].addEventListener('click',function(){
+                let date = this.dataset.date;
+                createInputView(date);
+            })
+        }
+    }
+    rcBtnAction();
+
+    // クリックイベントアクション
+    function createInputView(date){
+        var calContainer = document.getElementsByName('calContainer')[0];
+        var eventDom = "<div><p>"+date+"</p><input type='text'></div>";
+        var eventDomContent = document.createElement('div');
+        eventDomContent.className = 'rc_cal__inputWrap';
+        eventDomContent.innerHTML += eventDom;
+        calContainer.appendChild(eventDomContent);
     }
 }
 
