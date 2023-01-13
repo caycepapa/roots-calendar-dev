@@ -38,6 +38,14 @@ export function createFunc(){
     }
 
     /*-----------------------------------------
+    state 取得
+    -----------------------------------------*/
+    function stateSet(){
+        let rc_statelist = document.getElementsByName('rc_statelist')[0];
+        console.log(rc_statelist);
+    }
+
+    /*-----------------------------------------
     カレンダーテーブル生成
     -----------------------------------------*/
     function createProcess(year, month) {
@@ -115,6 +123,7 @@ export function createFunc(){
         }
     }
     rcBtnAction();
+    stateSet();
 
     // クリックイベントアクション
     function createInputView(date){

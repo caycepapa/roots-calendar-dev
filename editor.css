@@ -53,3 +53,8 @@
   transform: translate(-50%, -50%);
   background: #FFF;
 }
+
+.rc_statelist {
+  height: 0;
+  opacity: hidden;
+}

@@ -111,6 +111,7 @@ class RootsCalender{
 
             // setting view
             $records = $wpdb->get_results("SELECT * FROM ".$table_name);
+
             ?>
             <div class="wrap">
                 <h1 class="wp-heading-inline">カレンダー設定</h1>
@@ -118,12 +119,12 @@ class RootsCalender{
                 <h2>新規登録</h2>
                 <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
                     <input type="text" name="state_name" value="">
+                    <input type="color" name="state_color" value="">
+                    <input type="text" name="state_txt">
                     <select name="state_mark">
                         <option value="◯">◯</option>
                         <option value="✕">✕</option>
                     </select>
-                    <input type="color" name="state_color" value="">
-                    <input type="text" name="state_txt">
                     <input type="submit" value="追加">
                 </form>
                 <h2>一覧</h2>

@@ -1,5 +1,7 @@
 <?php
 
+include_once( plugin_dir_path( __FILE__ ) . 'classes/config.php' );
+
 class CalenderPostView{
 
     function __construct(){
@@ -48,10 +50,18 @@ class CalenderPostView{
         // その月の日数
         $this_day = date('t', strtotime($date_str));
 
+        // setting
+        $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
+        $records = $wpdb->get_results("SELECT * FROM ".$table_name);
         ?>
+            <ul class="rc_statelist" name="rc_statelist">
+            <?php foreach($records as $record): ?>
+                    <li><?php echo $record->state_name;?></li>
+            <?php endforeach;?>
+            </ul>
             <h1><?php echo $this_month;?>月</h1>
             <div name="calContainer">
-                <div name="calBox">あ
+                <div name="calBox">
                 </div>
             </div>
             <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-';?>1-1" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
