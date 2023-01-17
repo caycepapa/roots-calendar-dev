@@ -17,6 +17,10 @@
         border: 1px solid #CCC;
         padding: 4px;
 
+        span{
+            display: block;
+        }
+
         input{
             display: inline-block;
             position: absolute;
@@ -62,6 +66,5 @@
 }
 
 .rc_statelist{
-    height: 0;
-    opacity: hidden;
+    display: none;
 }

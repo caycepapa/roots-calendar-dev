@@ -42,13 +42,19 @@ export function createFunc(){
     -----------------------------------------*/
     function stateSet(){
         let rc_statelist = document.getElementsByName('rc_statelist')[0];
-        console.log(rc_statelist);
+        let rc_statelist_txt = [];
+        for(let i = 0; i < rc_statelist.childElementCount; i++){
+            rc_statelist_txt.push(rc_statelist.children[i].textContent);
+        }
+        return rc_statelist_txt;
     }
 
     /*-----------------------------------------
     カレンダーテーブル生成
     -----------------------------------------*/
     function createProcess(year, month) {
+
+        let rc_statelist = stateSet();
 
         var calendar = "<tr class='dayOfWeek'>";
 
@@ -68,6 +74,14 @@ export function createFunc(){
             return "<a class='rc_addbtn' data-date='" + year + "-" + month + "-" + day + "'>+</a><input type='checkbox' name='allset'>";
         }
 
+        var selectCreate = function(rc_statelist,year,month,day){
+            var optionTxt = '';
+            for(let i = 0; i < rc_statelist.length; i++){
+                optionTxt += '<option value="'+rc_statelist[i]+'">'+rc_statelist[i]+'</option>';
+            }
+            return "<select name='" + year + "-" + month + "-" + day+"-state'>" + optionTxt + "</select>";
+        }
+
         for (var i = 0; i < row; i++) {
             calendar += "<tr>";
             for (var j = 0; j < week.length; j++) {
@@ -77,18 +91,18 @@ export function createFunc(){
                     count++;
                     var counta = count - endDate;
                     counta = counta.toString().padStart(2,'0');
-                    calendar += "<td class='disabled'>" + counta + "</td>";
+                    calendar += "<td class='disabled'>" + "<span>" + count + "</span>" + "</td>";
                 } else {
                     count++;
                     if(year == today.getFullYear() && month == (today.getMonth()) && count == today.getDate()){
                         var counta = count;
                         var montha = month + 1;
                         counta = counta.toString().padStart(2,'0');
-                        calendar += "<td>" + count + buttonDomCreate(year,month,counta) + "</td>";
+                        calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                     }else if(year == today.getFullYear() && month == (today.getMonth()) && count < today.getDate()){
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');
-                        calendar += "<td>" + count + "</td>";
+                        calendar += "<td>" + "<span>" + count + "</span>" + "</td>";
                     }else{
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');
@@ -96,11 +110,11 @@ export function createFunc(){
                         if(month + 1 <= 12){
                             var montha = month + 1;
                             montha = montha.toString().padStart(2,'0');
-                            calendar += "<td>" + count + buttonDomCreate(year,montha,counta) + "</td>";
+                            calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                         }else{
                             var montha = month + 1 - 12;
                             montha = montha.toString().padStart(2,'0');
-                            calendar += "<td>>" + count + buttonDomCreate(year,montha,counta) + "</td>";
+                            calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                         }
                     }
                 }
@@ -123,7 +137,6 @@ export function createFunc(){
         }
     }
     rcBtnAction();
-    stateSet();
 
     // クリックイベントアクション
     function createInputView(date){

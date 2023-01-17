@@ -15,6 +15,9 @@
   border: 1px solid #CCC;
   padding: 4px;
 }
+.rc_calbox td span {
+  display: block;
+}
 .rc_calbox td input {
   display: inline-block;
   position: absolute;
@@ -55,6 +58,5 @@
 }
 
 .rc_statelist {
-  height: 0;
-  opacity: hidden;
+  display: none;
 }
