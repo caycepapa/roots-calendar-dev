@@ -24,6 +24,10 @@
   right: 4px;
   top: 4px;
 }
+.rc_calbox td select {
+  display: block;
+  width: 100%;
+}
 .rc_calbox .rc_addbtn {
   display: block;
   width: 100%;

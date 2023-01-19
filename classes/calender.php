@@ -10,6 +10,7 @@ class CalenderPostView{
     }
     
     function rc_create_custom_fields(){
+
         add_meta_box(
             'rc_calset',
             '休日・イベント設定',
@@ -26,11 +27,14 @@ class CalenderPostView{
 
         global $wpdb;
 
-        $sql = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_date_%'";
+        $sql = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND (meta_key LIKE 'rc_date_%' OR meta_key LIKE 'rc_status_%')";
 
-        $rc_date = $wpdb->get_results($sql,OBJECT);
+        $rc_data = $wpdb->get_results($sql,OBJECT);
 
-        echo $rc_date[0]->meta_value;
+        $json_array = json_encode($rc_data);
+
+        // rc_date&rc_statusをphpの配列からjsの配列へ
+        echo '<script>var js_array = '.$json_array.'</script>';
 
         $month  = '2';
         $year   = '2022';
@@ -64,7 +68,6 @@ class CalenderPostView{
                 <div name="calBox">
                 </div>
             </div>
-            <input type="hidden" name="rc_date_<?php echo $this_year.'-'.$this_month.'-';?>1-1" value="{type:'イベント',text:'テキストです',url:'https://roots.run'}">
         <?php
     }
 
@@ -81,9 +84,12 @@ class CalenderPostView{
         if (!wp_verify_nonce($_POST['custom_field_meta_box_nonce'], 'custom_field_save_meta_box_data')) {
             return;
         }
-        //var_dump($_POST);
+
         foreach($_POST as $key => $value){
             if(preg_match('/rc_date_/', $key)){
+                $data = sanitize_text_field($_POST[$key]);
+                update_post_meta($post_id, $key , $data);
+            }elseif(preg_match('/rc_status_/', $key)){
                 $data = sanitize_text_field($_POST[$key]);
                 update_post_meta($post_id, $key , $data);
             }

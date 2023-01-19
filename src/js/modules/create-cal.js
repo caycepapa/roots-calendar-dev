@@ -14,6 +14,9 @@ export function createFunc(){
     年間カレンダー作成
     -----------------------------------------*/
     function showProcess(date) {
+
+        console.log(js_array);
+
         var year = date.getFullYear();
         var month = date.getMonth();
 
@@ -70,48 +73,66 @@ export function createFunc(){
         var lastMonthEndDate = new Date(year, month, 0).getDate();
         var row = Math.ceil((startDayOfWeek + endDate) / week.length);
 
+        // イベント追加ボタン生成関数
         var buttonDomCreate = function(year,month,day){
             return "<a class='rc_addbtn' data-date='" + year + "-" + month + "-" + day + "'>+</a><input type='checkbox' name='allset'>";
         }
 
+        // セレクトボタン生成関数
         var selectCreate = function(rc_statelist,year,month,day){
-            var optionTxt = '';
+            var option_list = '<option value="">--</option>';
+
+            // ex) rc_status_2022-02-04
+            var status_name = 'rc_status_' + year + "-" + month + "-" + day;
+
+            // js_arrayはcaalender.phpに記載
+            const targetUser = js_array.find((v) => v.meta_key === status_name);
+            
             for(let i = 0; i < rc_statelist.length; i++){
-                optionTxt += '<option value="'+rc_statelist[i]+'">'+rc_statelist[i]+'</option>';
+                var selected_txt = (targetUser.meta_value == rc_statelist[i])? 'selected' : '';
+                option_list += '<option value="'+rc_statelist[i]+'"'+ selected_txt +'>'+rc_statelist[i]+'</option>';
             }
-            return "<select name='" + year + "-" + month + "-" + day+"-state'>" + optionTxt + "</select>";
+            
+            return "<select class='rc_status_selectbtn' name='"+ status_name +"'>" + option_list + "</select>";
         }
 
+        // カレンダー生成
         for (var i = 0; i < row; i++) {
             calendar += "<tr>";
             for (var j = 0; j < week.length; j++) {
                 if (i == 0 && j < startDayOfWeek) {
+                    // 前月の日付部分生成
                     calendar += "<td class='disabled'>" + (lastMonthEndDate - startDayOfWeek + j + 1) + "</td>";
                 } else if (count >= endDate) {
+                    // 翌月の日付部分生成
                     count++;
                     var counta = count - endDate;
                     counta = counta.toString().padStart(2,'0');
-                    calendar += "<td class='disabled'>" + "<span>" + count + "</span>" + "</td>";
+                    calendar += "<td class='disabled'>" + "<span>" + counta + "</span>" + "</td>";
                 } else {
                     count++;
                     if(year == today.getFullYear() && month == (today.getMonth()) && count == today.getDate()){
+                        // 当日生成
                         var counta = count;
                         var montha = month + 1;
                         counta = counta.toString().padStart(2,'0');
+                        montha = montha.toString().padStart(2,'0');
                         calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                     }else if(year == today.getFullYear() && month == (today.getMonth()) && count < today.getDate()){
+                        // 当月の当日より前の日（過ぎてしまった日）
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');
                         calendar += "<td>" + "<span>" + count + "</span>" + "</td>";
                     }else{
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');
-
                         if(month + 1 <= 12){
+                            // 当日以降
                             var montha = month + 1;
                             montha = montha.toString().padStart(2,'0');
                             calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                         }else{
+                            // 翌年
                             var montha = month + 1 - 12;
                             montha = montha.toString().padStart(2,'0');
                             calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
@@ -125,8 +146,9 @@ export function createFunc(){
         return calendar;
     }
 
-    // 生成したカレンダーのプラスボタンをクリックイベント
+    // 生成したカレンダーのプラスボタンをクリックイベントを設定
     function rcBtnAction(){
+
         var rc_addbtn = document.getElementsByClassName('rc_addbtn');
 
         for(let i = 0; i < rc_addbtn.length; i++){
@@ -138,14 +160,19 @@ export function createFunc(){
     }
     rcBtnAction();
 
-    // クリックイベントアクション
+    // イベント追加　クリック時アクション
     function createInputView(date){
         var calContainer = document.getElementsByName('calContainer')[0];
-        var eventDom = "<div><p>"+date+"</p><input type='text'></div>";
+        var eventDom = "<div><p>"+date+"</p><input type='text' name='rc_date_"+date+"[1][text]'><input type='text' name='rc_date_"+date+"[1][url]'><a class='rc_date_add'>追加</a></div>";
         var eventDomContent = document.createElement('div');
         eventDomContent.className = 'rc_cal__inputWrap';
         eventDomContent.innerHTML += eventDom;
         calContainer.appendChild(eventDomContent);
+
+        var rc_date_add = document.getElementsByClassName('rc_date_add');
+        rc_date_add.addEventListener('click',function(){
+            // {1{type:'イベント',text:'テキストです',url:'https://roots.run'}}
+        });
     }
 }
 
