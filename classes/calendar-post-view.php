@@ -2,7 +2,7 @@
 
 include_once( plugin_dir_path( __FILE__ ) . 'classes/config.php' );
 
-class CalenderPostView{
+class CalendarPostView{
 
     function __construct(){
         add_action('admin_menu', array($this,'rc_create_custom_fields'));
@@ -27,14 +27,23 @@ class CalenderPostView{
 
         global $wpdb;
 
-        $sql = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND (meta_key LIKE 'rc_date_%' OR meta_key LIKE 'rc_status_%')";
+        // rc_statusをphpの配列からjsの配列へ
+        $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_status_%'";
+        $rc_status = $wpdb->get_results($sql_status,OBJECT);
+        $rc_status_array = json_encode($rc_status);
+        echo '<script>var rc_status_array = '.$rc_status_array.'</script>';
 
-        $rc_data = $wpdb->get_results($sql,OBJECT);
+        // rc_eventsをphpの配列からjsの配列へ
+        $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_events_%'";
+        $rc_events = $wpdb->get_results($sql_events,OBJECT);
+        $rc_events_array = json_encode($rc_events);
+        echo '<script>var rc_events_array = '.$rc_events_array.'</script>';
 
-        $json_array = json_encode($rc_data);
-
-        // rc_date&rc_statusをphpの配列からjsの配列へ
-        echo '<script>var js_array = '.$json_array.'</script>';
+        // setting
+        $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
+        $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name);
+        $setting_records_array = json_encode($setting_records);
+        echo '<script>var setting_records_array = '.$setting_records_array.'</script>';
 
         $month  = '2';
         $year   = '2022';
@@ -54,18 +63,9 @@ class CalenderPostView{
         // その月の日数
         $this_day = date('t', strtotime($date_str));
 
-        // setting
-        $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
-        $records = $wpdb->get_results("SELECT * FROM ".$table_name);
         ?>
-            <ul class="rc_statelist" name="rc_statelist">
-            <?php foreach($records as $record): ?>
-                    <li><?php echo $record->state_name;?></li>
-            <?php endforeach;?>
-            </ul>
-            <h1><?php echo $this_month;?>月</h1>
-            <div name="calContainer">
-                <div name="calBox">
+            <div name="cal_container">
+                <div name="cal_box">
                 </div>
             </div>
         <?php
@@ -86,8 +86,8 @@ class CalenderPostView{
         }
 
         foreach($_POST as $key => $value){
-            if(preg_match('/rc_date_/', $key)){
-                $data = sanitize_text_field($_POST[$key]);
+            if(preg_match('/rc_events_/', $key)){
+                $data = json_encode($_POST[$key], JSON_UNESCAPED_UNICODE);
                 update_post_meta($post_id, $key , $data);
             }elseif(preg_match('/rc_status_/', $key)){
                 $data = sanitize_text_field($_POST[$key]);

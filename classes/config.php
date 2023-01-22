@@ -3,7 +3,7 @@
 class RC_Config{
 
     // カスタム投稿タイプ名
-    const NAME = 'roots_calender';
+    const NAME = 'roots_calendar';
 
     // 設定画面名
     const SETTING_NAME = 'roots-setting';

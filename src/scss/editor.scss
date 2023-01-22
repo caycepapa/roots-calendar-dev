@@ -1,6 +1,6 @@
 @charset 'utf-8';
 
-.rc_calbox{
+.rc-calbox{
     table{
         width: 100%;
         border-collapse: collapse;
@@ -34,7 +34,7 @@
         }
     }
 
-    .rc_addbtn{
+    .rc-addbtn{
         display: block;
         width: 100%;
         background: #DDD;
@@ -50,7 +50,7 @@
     }
 }
 
-.rc_cal__inputWrap{
+.rc-cal__inputwrap{
     position: fixed;
     top: 0;
     left: 0;
@@ -68,8 +68,16 @@
         transform: translate(-50%, -50%);
         background: #FFF;
     }
+
+    input{
+        display: block;
+    }
 }
 
-.rc_statelist{
-    display: none;
+.rc-event__btn{
+    display: block;
+    cursor: pointer;
+    &:hover{
+        text-decoration: underline;
+    }
 }
