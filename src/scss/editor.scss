@@ -58,25 +58,106 @@
     height: 100%;
     background: rgba($color: #000000, $alpha: 0.8);
     z-index: 9000;
-
-    div{
-        width: 50%;
-        height: 50%;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: #FFF;
-    }
-
-    input{
-        display: block;
-    }
 }
 
 .rc-event__btn{
     display: block;
     cursor: pointer;
+    &:hover{
+        text-decoration: underline;
+    }
+}
+
+.rc-modal__wrap{
+    padding: 16px;
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #FFF;
+}
+
+.rc-modal__ttl{
+    font-size: 24px;
+    font-weight: bold;
+    margin: .8rem 0;
+}
+
+.rc-modal__inner{
+    border-collapse: collapse;
+    width: 100%;
+
+    th{
+        border: 1px solid #CCC;
+        padding: .8rem 1.6rem;
+        background: #EEE;
+        font-weight: bold;
+    }
+    td{
+        border: 1px solid #CCC;
+        padding: .8rem 1.6rem;
+        
+        input{
+            width: 100%;
+        }
+    }
+}
+
+.rc-modal__close{
+    width: 40px;
+    height: 40px;
+    background: #000;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-indent: 100%;
+    cursor: pointer;
+
+    &:hover{
+        background: #333;
+    }
+
+    &::after,&::before{
+        width: 20px;
+        height: 1px;
+        background: #FFF;
+        content: '';
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    &::before{
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+}
+
+.rc-modal__submit{
+    padding: 2.4rem 0;
+    text-align: center;
+
+    input{
+        font-size: 16px;
+        padding: 8px 16px;
+        border-radius: 10px;
+        border: 1px solid #CCC;
+        cursor: pointer;
+
+        &:hover{
+            background: #FFF;
+        }
+    }
+}
+
+.rc-modal__delete{
+    cursor: pointer;
+
     &:hover{
         text-decoration: underline;
     }
