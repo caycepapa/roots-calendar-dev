@@ -65,6 +65,27 @@ class CalendarPostView{
 
         ?>
             <div name="cal_container">
+                <div class="rc-all__controller">
+                    <div>
+                        <label><input type="checkbox" name="calAllChangeCheckbox" value="allCheckFlg">すべて選択/解除</label>
+                    </div>
+                    <div>
+                        <select name="allChangeSelect">
+                        <?php 
+                            foreach($setting_records as $key => $value):
+                        ?>
+                            <option value="<?php echo $setting_records[$key]->state_name;?>">
+                            <?php echo $setting_records[$key]->state_name; ?>
+                            </option>
+                        <?php
+                            endforeach;
+                        ?>
+                        </select>
+                    </div>
+                    <div>
+                        <a class="rc-all__controller__btn" name="allChangeBtn">一括変更</a>
+                    </div>
+                </div>
                 <div name="cal_box">
                 </div>
             </div>

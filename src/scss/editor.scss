@@ -8,6 +8,7 @@
 
     th{
         border: 1px solid #CCC;
+        width: calc(100% / 7);
     }
 
     td{
@@ -16,9 +17,11 @@
         vertical-align: top;
         border: 1px solid #CCC;
         padding: 4px;
+        width: calc(100% / 7);
 
         span{
             display: block;
+            margin-bottom: 4px;
         }
 
         input{
@@ -31,6 +34,7 @@
         select{
             display: block;
             width: 100%;
+            margin-bottom: 4px;
         }
     }
 
@@ -63,6 +67,7 @@
 .rc-event__btn{
     display: block;
     cursor: pointer;
+    padding: 0 0 4px;
     &:hover{
         text-decoration: underline;
     }
@@ -160,5 +165,33 @@
 
     &:hover{
         text-decoration: underline;
+    }
+}
+
+
+/*-----------------------------------------
+一括選択
+-----------------------------------------*/
+.rc-all__controller{
+    padding: 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rc-all__controller__btn{
+    background: #2271b1;
+    border-color: #2271b1;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: none;
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover{
+        color: #FFF;
+        background: #2060A0;
     }
 }

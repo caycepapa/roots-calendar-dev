@@ -30,6 +30,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _mod
 
 /***/ }),
 
+/***/ "./src/js/modules/cal-all-change.js":
+/*!******************************************!*\
+  !*** ./src/js/modules/cal-all-change.js ***!
+  \******************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }\n/* harmony export */ });\n\n\n/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {\n  var calAllChangeCheckbox = document.getElementsByName('calAllChangeCheckbox')[0];\n  var allset = document.getElementsByName('allset');\n  var allChangeBtn = document.getElementsByName('allChangeBtn')[0];\n  var allChangeSelect = document.getElementsByName('allChangeSelect')[0];\n  calAllChangeCheckbox.addEventListener('change', function (event) {\n    if (calAllChangeCheckbox.checked) {\n      console.log('チェックされました');\n      checkAddAction();\n    } else {\n      console.log('チェック解除されました');\n      checkRemoveAction();\n    }\n  });\n  allChangeBtn.addEventListener('click', function () {\n    var data = allChangeSelect.value;\n    allChangeFunc(data);\n  });\n  var checkAddAction = function checkAddAction() {\n    for (var i = 0; i < allset.length; i++) {\n      allset[i].checked = true;\n    }\n  };\n  var checkRemoveAction = function checkRemoveAction() {\n    for (var i = 0; i < allset.length; i++) {\n      allset[i].checked = false;\n    }\n  };\n  var allChangeFunc = function allChangeFunc(data) {\n    for (var i = 0; i < allset.length; i++) {\n      if (allset[i].checked) {\n        var parent = allset[i].parentNode;\n        var selectBtn = parent.querySelector('select');\n        var options = selectBtn.options;\n        for (var n = 0; n < options.length; n++) {\n          if (options[n].value == data) {\n            options[n].selected = true;\n          } else {\n            options[n].selected = false;\n          }\n        }\n      }\n    }\n  };\n}\n\n//# sourceURL=webpack://roots-faq-blocks/./src/js/modules/cal-all-change.js?");
+
+/***/ }),
+
 /***/ "./src/js/modules/create-cal.js":
 /*!**************************************!*\
   !*** ./src/js/modules/create-cal.js ***!
@@ -59,7 +70,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }\n/* harmony export */ });\n/* harmony import */ var _create_cal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./create-cal */ \"./src/js/modules/create-cal.js\");\n\n\n\n/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {\n  _create_cal__WEBPACK_IMPORTED_MODULE_0__.createFunc();\n}\n\n//# sourceURL=webpack://roots-faq-blocks/./src/js/modules/editor-init.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": function() { return /* export default binding */ __WEBPACK_DEFAULT_EXPORT__; }\n/* harmony export */ });\n/* harmony import */ var _create_cal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./create-cal */ \"./src/js/modules/create-cal.js\");\n/* harmony import */ var _cal_all_change__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cal-all-change */ \"./src/js/modules/cal-all-change.js\");\n\n\n\n\n/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {\n  _create_cal__WEBPACK_IMPORTED_MODULE_0__.createFunc();\n  (0,_cal_all_change__WEBPACK_IMPORTED_MODULE_1__[\"default\"])();\n}\n\n//# sourceURL=webpack://roots-faq-blocks/./src/js/modules/editor-init.js?");
 
 /***/ })
 

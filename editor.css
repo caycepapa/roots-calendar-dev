@@ -1,12 +1,14 @@
 /*!*********************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[0].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[0].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[0].use[3]!./src/scss/editor.scss ***!
   \*********************************************************************************************************************************************************************************************************************************************/
+@charset "UTF-8";
 .rc-calbox table {
   width: 100%;
   border-collapse: collapse;
 }
 .rc-calbox th {
   border: 1px solid #CCC;
+  width: 14.2857142857%;
 }
 .rc-calbox td {
   height: 80px;
@@ -14,9 +16,11 @@
   vertical-align: top;
   border: 1px solid #CCC;
   padding: 4px;
+  width: 14.2857142857%;
 }
 .rc-calbox td span {
   display: block;
+  margin-bottom: 4px;
 }
 .rc-calbox td input {
   display: inline-block;
@@ -27,6 +31,7 @@
 .rc-calbox td select {
   display: block;
   width: 100%;
+  margin-bottom: 4px;
 }
 .rc-calbox .rc-addbtn {
   display: block;
@@ -55,6 +60,7 @@
 .rc-event__btn {
   display: block;
   cursor: pointer;
+  padding: 0 0 4px;
 }
 .rc-event__btn:hover {
   text-decoration: underline;
@@ -145,4 +151,30 @@
 }
 .rc-modal__delete:hover {
   text-decoration: underline;
+}
+
+/*-----------------------------------------
+一括選択
+-----------------------------------------*/
+.rc-all__controller {
+  padding: 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-all__controller__btn {
+  background: #2271b1;
+  border-color: #2271b1;
+  color: #fff;
+  text-decoration: none;
+  text-shadow: none;
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.rc-all__controller__btn:hover {
+  color: #FFF;
+  background: #2060A0;
 }
