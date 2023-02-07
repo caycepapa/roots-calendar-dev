@@ -68,9 +68,34 @@ class setMenu {
             );
         }
         add_action('init', 'rc_add_page');
+
+
+        // ショートコード作成
+        function roots_calendar_key_func($atts){
+            return "受け取った数字は".$atts['num'].'です';   
+        }
+        add_shortcode('roots-calendar-key','roots_calendar_key_func');
+
+        // カラム追加
+        function manage_add_columns ($columns) {
+            $columns = array(
+                'title' => 'カレンダー名',	// タイトル→書籍名にカラム名変更
+                'shortcode' => 'ショートコード',
+            );
+            return $columns;
+        }
+
+        function add_custom_column ($column_name, $post_id) {
+            if($column_name == 'shortcode'){
+                echo '[roots-calendar-key num='.$post_id.']';
+            }
+        }
+        
+        add_filter('manage_'.RC_Config::NAME.'_posts_columns', 'manage_add_columns');
+        add_action('manage_'.RC_Config::NAME.'_posts_custom_column', 'add_custom_column', 10, 2);
+
     }
 }
-
 
 
 class RootsCalendar{
