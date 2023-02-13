@@ -123,21 +123,40 @@ class RootsCalendar{
         /* 
         js style読み込み
         ---------------------------------------------- */
-        function rc_load_scripts() {
+        function rc_load_editor_scripts() {
             wp_enqueue_script(
                 'editor_script',
                 plugins_url( '', __FILE__ ) . '/editor.js',
             );
         }
-        add_action('admin_print_footer_scripts','rc_load_scripts');
+        add_action('admin_print_footer_scripts','rc_load_editor_scripts');
 
-        function rc_load_style() {
+        function rc_load_public_scripts() {
+            wp_enqueue_script(
+                'editor_script',
+                plugins_url( '', __FILE__ ) . '/script.js',
+                null,
+                null,
+                true
+            );
+        }
+        add_action('wp_enqueue_scripts','rc_load_public_scripts');
+
+        function rc_load_editor() {
             wp_enqueue_style(
                 'editor_style',
                 plugins_url( '', __FILE__ ) . '/editor.css',
             );
         }
-        add_action('admin_print_styles','rc_load_style');
+        add_action('admin_print_styles','rc_load_editor');
+
+        function rc_load_style() {
+            wp_enqueue_style(
+                'editor_style',
+                plugins_url( '', __FILE__ ) . '/style.css',
+            );
+        }
+        add_action('wp_enqueue_scripts','rc_load_style');
 
         /* 
         カレンダー設定画面表示

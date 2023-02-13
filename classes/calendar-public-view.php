@@ -8,9 +8,23 @@ class CalendarPublicView{
 
         global $wpdb;
 
+        /* 
+        status取得
+        ---------------------------------------------- */
         $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_status_%'";
-        $rc_status = $wpdb->get_results($sql_status,ARRAY_A);
-        $rc_date = $rc_status[array_search('rc_status_2023-01-22', array_column($rc_status, 'meta_key'))];
+        $rc_status = $wpdb->get_results($sql_status , ARRAY_A);
+
+        /* 
+        events取得
+        ---------------------------------------------- */
+        $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_events_%'";
+        $rc_events = $wpdb->get_results($sql_events , ARRAY_A);
+
+        /* 
+        status設定取得
+        ---------------------------------------------- */
+        $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
+        $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name , ARRAY_A);
 
         if (isset($_GET['ym'])) {
             $ym = $_GET['ym'];
@@ -26,6 +40,8 @@ class CalendarPublicView{
         }
 
         $today = date('Y-m-j');
+        $today_num = date('j');
+        $today_month = date('m');
 
         $html_title = date('Y年n月', $timestamp);
 
@@ -42,13 +58,49 @@ class CalendarPublicView{
 
         for ( $day = 1; $day <= $day_count; $day++, $youbi++) {
 
-            $date = $ym . '-' . str_pad($day, 2, 0, STR_PAD_LEFT);;
+            $date = $ym . '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
+            $bg_color = '';
+
             $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
+            $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
+
+            $bg_color = $rc_status_flg['state_color'];
+            
+            // eventsの配列番号を返す
+            $event_num = array_search('rc_events_'.$date, array_column($rc_events, 'meta_key'));
+            $rc_eve_balloon = '';
+            $rc_eve_btnclass = '';
+
+            /* 
+            eventが存在する場合
+            ---------------------------------------------- */
+            if(is_int($event_num)){
+
+                $rc_eve = $rc_events[$event_num];
+                $rc_eve_array = json_decode($rc_eve['meta_value'],true);
+                $rc_eve_balloon = '<div class="rc_cal_balloon">';
+
+                for($i = 0; $i < count($rc_eve_array); $i++){
+                    $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
+                    $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                    
+                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                    $bg_color = $rc_eve_array[$i]['event_color'];
+                }
+
+                $rc_eve_balloon .= '</div>';
+            }
+
 
             if ($today == $date) {
-                $week .= '<td class="today" data='.$date.'>' . $day.'<p>'.$rc_date['meta_value'].'</p>';
+                $week .= '<td class="rc_cal_today '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
             } else {
-                $week .= '<td data='.$date.'>' . $day .'<p>'.$rc_date['meta_value'].'</p>';
+
+                if($day < $today_num && $today_month == date('m', $timestamp)){
+                    $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
+                }else{
+                    $week .= '<td class="rc_cal_day '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
+                }
             }
             $week .= '</td>';
 
@@ -68,7 +120,7 @@ class CalendarPublicView{
                 <h3 class="mb-5"><?php echo $html_title; ?></h3>
                 <a href="?ym=<?php echo $prev; ?>#rc-calendar">&lt;</a> 
                 <a href="?ym=<?php echo $next; ?>#rc-calendar">&gt;</a>
-                <table>
+                <table class="rc-calendar__table">
                     <tr>
                         <th>日</th>
                         <th>月</th>
