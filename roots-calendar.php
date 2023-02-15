@@ -96,15 +96,19 @@ class RootsCalendar{
         function manage_add_columns ($columns) {
             $columns = array(
                 'title' => 'カレンダー名',
-                'shortcode' => 'ショートコード',
+                'shortcode01' => 'カレンダーショートコード',
+                'shortcode02' => '日別表示ショートコード',
             );
             return $columns;
         }
 
         // カラム内容作成
         function add_custom_column ($column_name, $post_id) {
-            if($column_name == 'shortcode'){
+            if($column_name == 'shortcode01'){
                 echo '[roots-calendar-key num='.$post_id.']';
+            }
+            if($column_name == 'shortcode02'){
+                echo '[roots-calendar-key-day num='.$post_id.']';
             }
         }
 
@@ -119,6 +123,15 @@ class RootsCalendar{
             return ob_get_clean();
         }
         add_shortcode('roots-calendar-key','roots_calendar_key_func');
+
+        function roots_calendar_key_day_func($atts){
+            include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-public-view-day.php' );
+            $calendar = new CalendarPublicViewDay();
+            ob_start();
+            echo $calendar->rc_calset_form($atts['num']);
+            return ob_get_clean();
+        }
+        add_shortcode('roots-calendar-key-day','roots_calendar_key_day_func');
 
         /* 
         js style読み込み
