@@ -35,7 +35,7 @@ class CalendarOptionView{
             追加または更新時実行
             ---------------------------------------------- */
             if(!empty($_POST)){
-                if($_POST['created'] == 'ture'){
+                if($_POST['created'][0] == 'true'){
                     $wpdb->update(
                         $table_name,
                         array(
@@ -46,7 +46,6 @@ class CalendarOptionView{
                     );
                 }else{
                     if(isset($_POST['option_value'][0])){
-                        var_dump($_POST['option_name'][0]);
                         $wpdb->insert(
                             $table_name,
                             array(

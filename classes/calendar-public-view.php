@@ -59,23 +59,30 @@ class CalendarPublicView{
         ---------------------------------------------- */
         $nextMonth =  date('m', $timestamp) + 1;
         $prevMonth =  date('m', $timestamp);
+        $optionValue = $howlong->option_value;
+        $viewMonth = date('m') + $optionValue;
 
-        $viewMonth = date('m') + $howlong->option_value;
         if($viewMonth >= 12){
             $viewMonth = $viewMonth - 12;
         }
-        
-        if($nextMonth == $viewMonth){
-            $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
-            $next = '';
-        }elseif($today_month == $prevMonth){
-            $prev = '';
-            $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp)));
-        }else{
-            $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
-            $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp))); 
-        }
 
+        if($optionValue == 1){
+            $prev = '';
+            $next = '';
+        }else{
+            if($nextMonth == $viewMonth){
+                $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
+                $next = '';
+            }elseif($today_month == $prevMonth){
+                $prev = '';
+                $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp)));
+            }else{
+                $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
+                $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp))); 
+            }
+        }
+        
+        
 
         $day_count = date('t', $timestamp);
         $youbi = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp)));

@@ -28,9 +28,11 @@ class CalendarPublicViewDay{
 
         $rc_status_flg = $setting_records[array_search($rc_today_status, array_column($setting_records, 'state_name'))];
 
-        echo get_the_title( $post_id );
-        echo $rc_status_flg['state_mark'];
-        echo $rc_status_flg['state_txt'];
+        echo '<div class="rc-cal-day">';
+        echo '<div class="rc-cal-day__ttl">'.get_the_title( $post_id ).'</div>';
+        echo '<div class="rc-cal-day__mark--'.$rc_status_flg['state_mark'].'">'.$rc_status_flg['state_mark'].'</div>';
+        echo '<div class="rc-cal-day__txt">'.$rc_status_flg['state_txt'].'</div>';
+        echo '</div>';
         
     }
 

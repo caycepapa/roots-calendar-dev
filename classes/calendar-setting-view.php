@@ -87,8 +87,9 @@ class CalendarSettingView{
                     <input type="color" name="state_color" value="">
                     <input type="text" name="state_txt">
                     <select name="state_mark">
-                        <option value="◯">◯</option>
-                        <option value="✕">✕</option>
+                        <option value="true">◯</option>
+                        <option value="false">✕</option>
+                        <option value="other">△</option>
                     </select>
                     <input type="submit" value="追加">
                 </form>
@@ -104,11 +105,9 @@ class CalendarSettingView{
                                 <input type="color" name="cal_setting[<?php echo $record['id'];?>][state_color]" value="<?php echo $record['state_color'];?>">
                                 <input type="text" name="cal_setting[<?php echo $record['id'];?>][state_txt]" value="<?php echo $record['state_txt'];?>">
                                 <select name="cal_setting[<?php echo $record['id'];?>][state_mark]" id="">
-                                    <?php if($record['state_mark'] == '◯'): ?>
-                                        <option value="◯" selected>◯</option>
-                                    <?php else: ?>
-                                        <option value="✕" selected>✕</option>
-                                    <?php endif;?>
+                                    <option value="ture" <?php echo $record['state_mark'] == 'ture' ? 'selected': '' ?>>◯</option>
+                                    <option value="false" <?php echo $record['state_mark'] == 'false' ? 'selected': '' ?>>✕</option>
+                                    <option value="other" <?php echo $record['state_mark'] == 'other' ? 'selected': '' ?>>△</option>
                                 </select>
                                 <input type="hidden" name="cal_setting[<?php echo $record['id'];?>][state_id]" value="<?php echo $record['id'];?>">
                                 <label><input type="checkbox" name="cal_setting[<?php echo $record['id'];?>][delete]">削除</label>
