@@ -26,6 +26,15 @@ class CalendarPublicView{
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
         $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name , ARRAY_A);
 
+        /* 
+        option取得
+        ---------------------------------------------- */
+        $option_table_name = $wpdb->prefix . RC_Config::OPTION_TABLE;
+        $option_records = $wpdb->get_results("SELECT * FROM ".$option_table_name);
+        $howlong = $option_records[array_search('公開月数', array_column($option_records, 'option_name'))];
+
+        // $howlong->option_value
+
         if (isset($_GET['ym'])) {
             $ym = $_GET['ym'];
         } else {
@@ -45,8 +54,28 @@ class CalendarPublicView{
 
         $html_title = date('Y年n月', $timestamp);
 
-        $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
-        $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp)));
+        /* 
+        翌月のボタン
+        ---------------------------------------------- */
+        $nextMonth =  date('m', $timestamp) + 1;
+        $prevMonth =  date('m', $timestamp);
+
+        $viewMonth = date('m') + $howlong->option_value;
+        if($viewMonth >= 12){
+            $viewMonth = $viewMonth - 12;
+        }
+        
+        if($nextMonth == $viewMonth){
+            $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
+            $next = '';
+        }elseif($today_month == $prevMonth){
+            $prev = '';
+            $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp)));
+        }else{
+            $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
+            $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp))); 
+        }
+
 
         $day_count = date('t', $timestamp);
         $youbi = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp)));
@@ -93,9 +122,8 @@ class CalendarPublicView{
 
 
             if ($today == $date) {
-                $week .= '<td class="rc_cal_today '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
+                $week .= '<td class="rc_cal_day rc_cal_today '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
             } else {
-
                 if($day < $today_num && $today_month == date('m', $timestamp)){
                     $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
                 }else{
@@ -117,9 +145,15 @@ class CalendarPublicView{
 
         ?>
             <div class="rc-calendar__wrap" id="rc-calendar">
-                <h3 class="mb-5"><?php echo $html_title; ?></h3>
-                <a href="?ym=<?php echo $prev; ?>#rc-calendar">&lt;</a> 
-                <a href="?ym=<?php echo $next; ?>#rc-calendar">&gt;</a>
+                <div class="rc-calendar__header">
+                    <?php if(!empty($prev)):?>
+                    <a href="?ym=<?php echo $prev; ?>#rc-calendar">&lt;前の月</a> 
+                    <?php endif; ?>
+                    <h3 class="mb-5"><?php echo $html_title; ?></h3>
+                    <?php if(!empty($next)): ?>
+                    <a href="?ym=<?php echo $next; ?>#rc-calendar">次の月&gt;</a>
+                    <?php endif;?>
+                </div>
                 <table class="rc-calendar__table">
                     <tr>
                         <th>日</th>

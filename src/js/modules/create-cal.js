@@ -127,12 +127,14 @@ export function createFunc(){
                         var montha = month + 1;
                         counta = counta.toString().padStart(2,'0');
                         montha = montha.toString().padStart(2,'0');
-                        calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + eventCreate(year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
+                        calendar += "<td style='background:#ffdddd;'>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + eventCreate(year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                     }else if(year == today.getFullYear() && month == (today.getMonth()) && count < today.getDate()){
                         // 当月の当日より前の日（過ぎてしまった日）
                         var counta = count;
+                        var montha = month + 1;
                         counta = counta.toString().padStart(2,'0');
-                        calendar += "<td>" + "<span>" + count + "</span>" + "</td>";
+                        montha = montha.toString().padStart(2,'0');
+                        calendar += "<td>" + "<span>" + count + "</span>" + selectCreate(rc_statelist,year,montha,counta) + eventCreate(year,montha,counta) + buttonDomCreate(year,montha,counta) + "</td>";
                     }else{
                         var counta = count;
                         counta = counta.toString().padStart(2,'0');

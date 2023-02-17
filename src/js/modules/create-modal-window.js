@@ -22,7 +22,7 @@ export function open(date,meta,num){
                     "</tr>" +
                     "<tr>" +
                     "<th>カラー</th>" +
-                    "<td><input type='color' name='"+ meta +"["+num+"][event_color]' value='#FF0000'></td>" +
+                    "<td><input type='color' name='"+ meta +"["+num+"][event_color]' value='#b1fcb0'></td>" +
                     "</tr>" +
                 "</table>" +
                 "<div class='rc-modal__submit'><input type='submit' value='追加する' name='save'></div>" + 

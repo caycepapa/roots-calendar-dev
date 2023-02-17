@@ -7,7 +7,13 @@ class RC_Config{
 
     // 設定画面名
     const SETTING_NAME = 'roots-setting';
+
+    // 設定画面名
+    const OPTION_NAME = 'roots-options';
     
     // 設定テーブル
     const SETTING_TABLE = 'rc_settings';
+
+    // 設定テーブル
+    const OPTION_TABLE = 'rc_options';
 }

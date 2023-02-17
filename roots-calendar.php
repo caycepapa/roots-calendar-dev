@@ -42,6 +42,37 @@ class CustomMetaTable {
     }
 }
 
+class CustomOptionTable {
+
+    var $table_name;
+
+    public function __construct(){
+        global $wpdb;
+        $this->table_name = $wpdb->prefix.RC_Config::OPTION_TABLE;
+        register_activation_hook (__FILE__, array($this, 'cot_activate'));
+    }
+
+    function cot_activate() {
+        global $wpdb;
+        $cot_db_version = '1.0';
+
+        $installed_ver = get_option( 'cot_meta_version' );
+
+        if( $installed_ver != $cot_db_version ) {
+            $sql = "CREATE TABLE " . $this->table_name . " (
+                id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                option_name text NOT NULL,
+                option_value text NOT NULL,
+                UNIQUE KEY id (id)
+            )
+            CHARACTER SET 'utf8';";
+            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+            dbDelta($sql);
+            update_option('cot_meta_version', $cot_db_version);
+        }
+    }
+}
+
 /* 
 メニュー表示
 ---------------------------------------------- */
@@ -79,6 +110,11 @@ class RootsCalendar{
         ステータス設定用のDB生成クラス
         ---------------------------------------------- */
         new CustomMetaTable;
+
+        /* 
+        オプション設定用のDB生成クラス
+        ---------------------------------------------- */
+        new CustomOptionTable;
 
         /* 
         メニューセット
@@ -176,6 +212,12 @@ class RootsCalendar{
         ---------------------------------------------- */
         include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-setting-view.php' );
         new CalendarSettingView();
+
+        /* 
+        カレンダー設定画面表示
+        ---------------------------------------------- */
+        include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-option-view.php' );
+        new CalendarOptionView();
 
         /* 
         カレンダー登録画面表示
