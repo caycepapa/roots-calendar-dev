@@ -54,6 +54,23 @@
     }
 }
 
+.rc-calbox__header{
+    padding-top: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    label{
+        display: inline-block;
+        margin-bottom: 8px;
+    }
+}
+
+.rc-calbox__ttl{
+    font-size: 24px !important;
+    padding-left: 0 !important;
+}
+
 .rc-cal__inputwrap{
     position: fixed;
     top: 0;
@@ -173,7 +190,7 @@
 一括選択
 -----------------------------------------*/
 .rc-all__controller{
-    padding: 24px 0;
+    padding: 0 0 8px;
     display: flex;
     align-items: center;
     gap: 8px;

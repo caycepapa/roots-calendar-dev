@@ -28,9 +28,9 @@ export function createFunc(){
             calBoxInner.className = 'rc-calbox';
 
             if(month + i + 1 <= 12){
-                calBoxInner.innerHTML = '<h2>' + year + "年 " + (month + i + 1) + "月" + '</h2>';
+                calBoxInner.innerHTML = '<div class="rc-calbox__header"><h2 class="rc-calbox__ttl">' + year + "年 " + (month + i + 1) + "月" + '</h2><label><input type="checkbox" name="calAllChangeCheckboxMonth" value="allCheckFlg">この月をすべて選択/解除</label></div>';
             }else{
-                calBoxInner.innerHTML = '<h2>' + (year+1) + "年 " + (month + i + 1 - 12) + "月" + '</h2>';
+                calBoxInner.innerHTML = '<div class="rc-calbox__header"><h2 class="rc-calbox__ttl">' + (year+1) + "年 " + (month + i + 1 - 12) + "月" + '</h2><label><input type="checkbox" name="calAllChangeCheckboxMonth" value="allCheckFlg">この月をすべて選択/解除</label></div>';
             }
 
             var calBoxTable = document.createElement('table');
