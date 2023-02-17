@@ -1,6 +1,6 @@
 <?php
 
-include_once( plugin_dir_path( __FILE__ ) . 'classes/config.php' );
+include_once( 'config.php' );
 
 class CalendarOptionView{
 
@@ -34,24 +34,30 @@ class CalendarOptionView{
             /* 
             追加または更新時実行
             ---------------------------------------------- */
-            if($_POST['created']){
-                $wpdb->update(
-                    $table_name,
-                    array(
-                        'option_name' => $_POST['option_name'][0],
-                        'option_value' => $_POST['option_value'][0]
-                    ),
-                    array( 'id' =>  $_POST['option_id'][0])
-                );
-            }else{
-                $wpdb->insert(
-                    $table_name,
-                    array(
-                        'option_name' => $_POST['option_name'][0],
-                        'option_value' => $_POST['option_value'][0],
-                    )
-                );
+            if(!empty($_POST)){
+                if($_POST['created'] == 'ture'){
+                    $wpdb->update(
+                        $table_name,
+                        array(
+                            'option_name' => $_POST['option_name'][0],
+                            'option_value' => $_POST['option_value'][0]
+                        ),
+                        array( 'id' =>  $_POST['option_id'][0])
+                    );
+                }else{
+                    if(isset($_POST['option_value'][0])){
+                        var_dump($_POST['option_name'][0]);
+                        $wpdb->insert(
+                            $table_name,
+                            array(
+                                'option_name' => $_POST['option_name'][0],
+                                'option_value' => $_POST['option_value'][0],
+                            )
+                        );
+                    }
+                }
             }
+            
 
             /* 
             画面表示
@@ -64,18 +70,15 @@ class CalendarOptionView{
                 <hr class="wp-header-end">
                 <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::OPTION_NAME;?>' method='POST'>
                     <?php
-                        $howlong = $records[array_search('公開月数', array_column($records, 'option_name'))];
+                        if(!empty($records)){
+                            $howlong = $records[array_search('公開月数', array_column($records, 'option_name'))];
+                        }
                     ?>
-                    <?php
-                        if(isset($howlong->option_value)):?>
+                    <?php if(isset($howlong->option_value)):?>
                     <input type="hidden" name="created[0]" value="true">
-                    <?php
-                        else:
-                    ?>
+                    <?php else: ?>
                     <input type="hidden" name="created[0]" value="false">
-                    <?php
-                        endif;
-                    ?>
+                    <?php endif; ?>
                     <input type="hidden" name="option_id[0]" value="1">
                     <input type="hidden" name="option_name[0]" value="公開月数">
                     公開月数： 

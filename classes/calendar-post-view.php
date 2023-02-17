@@ -1,6 +1,6 @@
 <?php
 
-include_once( plugin_dir_path( __FILE__ ) . 'classes/config.php' );
+include_once( 'config.php' );
 
 class CalendarPostView{
 
@@ -61,7 +61,7 @@ class CalendarPostView{
         }
 
         // その月の日数
-        $this_day = date('t', strtotime($date_str));
+        $this_day = date('t');
 
         ?>
             <div name="cal_container">

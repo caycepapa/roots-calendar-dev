@@ -1,6 +1,6 @@
 <?php
 
-include_once( plugin_dir_path( __FILE__ ) . 'classes/config.php' );
+include_once( 'config.php' );
 
 class CalendarPublicViewDay{
 
