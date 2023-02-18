@@ -11,7 +11,9 @@ export function createFunc(){
     const today = new Date();
     var showNum = 12;
 
-    showProcess(today);
+    if(calBox){
+        showProcess(today);
+    }
 
     /*-----------------------------------------
     年間カレンダー作成
