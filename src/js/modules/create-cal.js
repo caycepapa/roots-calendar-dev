@@ -46,7 +46,7 @@ export function createFunc(){
     -----------------------------------------*/
     function createProcess(year, month) {
         
-        if(typeof setting_records_array === 'undefined'){
+        if(typeof setting_records_array !== 'undefined'){
             let rc_statelist = setting_records_array;
 
             var calendar = "<tr class='dayOfWeek'>";
