@@ -18,8 +18,6 @@ class CalendarPublicViewDay{
 
         $rc_today_status = $rc_status[0]['meta_value'];
 
-        $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
-
         /* 
         status設定取得
         ---------------------------------------------- */
