@@ -155,10 +155,14 @@ class CalendarPublicView{
                 <div class="rc-calendar__header">
                     <?php if(!empty($prev)):?>
                     <a href="?ym=<?php echo $prev; ?>#rc-calendar">&lt;前の月</a> 
+                    <?php else: ?>
+                    <span>&lt;前の月</span> 
                     <?php endif; ?>
                     <h3 class="mb-5"><?php echo $html_title; ?></h3>
                     <?php if(!empty($next)): ?>
                     <a href="?ym=<?php echo $next; ?>#rc-calendar">次の月&gt;</a>
+                    <?php else: ?>
+                    <span>次の月&gt;</span>
                     <?php endif;?>
                 </div>
                 <table class="rc-calendar__table">
