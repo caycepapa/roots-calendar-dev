@@ -105,7 +105,7 @@ class CalendarSettingView{
                                 <input type="color" name="cal_setting[<?php echo $record['id'];?>][state_color]" value="<?php echo $record['state_color'];?>">
                                 <input type="text" name="cal_setting[<?php echo $record['id'];?>][state_txt]" value="<?php echo $record['state_txt'];?>">
                                 <select name="cal_setting[<?php echo $record['id'];?>][state_mark]" id="">
-                                    <option value="ture" <?php echo $record['state_mark'] == 'ture' ? 'selected': '' ?>>◯</option>
+                                    <option value="true" <?php echo $record['state_mark'] == 'true' ? 'selected': '' ?>>◯</option>
                                     <option value="false" <?php echo $record['state_mark'] == 'false' ? 'selected': '' ?>>✕</option>
                                     <option value="other" <?php echo $record['state_mark'] == 'other' ? 'selected': '' ?>>△</option>
                                 </select>
