@@ -27,7 +27,9 @@
     font-size: 14px;
     bottom: 80%;
     left: 0;
+    max-width: 100px;
     width: fit-content;
+    z-index: 100;
 
     a{
         display: block;

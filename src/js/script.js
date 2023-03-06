@@ -12,6 +12,7 @@ handle();
 //viewport();
 
 var rc_cal_day = document.getElementsByClassName('rc_cal_day');
+var body = document.getElementsByTagName('body')[0];
 
 var click_action = (dom) =>{
     remove_balloon();
@@ -36,3 +37,7 @@ for(var i = 0; i < rc_cal_day.length; i++){
         });
     }
 }
+
+body.addEventListener('click',function(){
+    remove_balloon();
+});

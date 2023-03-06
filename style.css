@@ -26,8 +26,10 @@
   font-size: 14px;
   bottom: 80%;
   left: 0;
+  max-width: 100px;
   width: -moz-fit-content;
   width: fit-content;
+  z-index: 100;
 }
 .rc_cal_balloon a {
   display: block;
