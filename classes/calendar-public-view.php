@@ -48,7 +48,7 @@ class CalendarPublicView{
             $timestamp = strtotime($ym . '-01');
         }
 
-        $today = date('Y-m-j');
+        $today = date('Y-m-d');
         $today_num = date('j');
         $today_month = date('m');
 
@@ -81,8 +81,7 @@ class CalendarPublicView{
                 $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp))); 
             }
         }
-        
-        
+
 
         $day_count = date('t', $timestamp);
         $youbi = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp)));
@@ -126,7 +125,6 @@ class CalendarPublicView{
 
                 $rc_eve_balloon .= '</div>';
             }
-
 
             if ($today == $date) {
                 $week .= '<td class="rc_cal_day rc_cal_today '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';

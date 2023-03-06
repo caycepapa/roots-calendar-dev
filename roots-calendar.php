@@ -84,7 +84,10 @@ class setMenu {
                     'public' => true,
                     'label' => 'カレンダー',
                     'show_in_rest' => false,
-                    'supports' => array('title'),
+                    'supports' => array(
+                        'title',
+                        'author'
+                    ),
                     'has_archive' => false,
                     'menu_position' => 0,
                     'menu_icon' => 'dashicons-calendar',
