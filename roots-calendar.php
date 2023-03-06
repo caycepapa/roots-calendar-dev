@@ -89,7 +89,7 @@ class setMenu {
                         'author'
                     ),
                     'has_archive' => false,
-                    'menu_position' => 0,
+                    'menu_position' => 99,
                     'menu_icon' => 'dashicons-calendar',
                     'hierarchical' => true,
                     'labels' => array(
