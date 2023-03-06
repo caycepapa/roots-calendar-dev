@@ -9,6 +9,17 @@
         text-align: center;
         box-sizing: border-box;
     }
+
+    tr{
+        td{
+            &:nth-child(n + 4){
+                .rc_cal_balloon{
+                    left: auto;
+                    right: 0;
+                }
+            }
+        }
+    }
 }
 
 .rc_cal_day{
@@ -27,7 +38,6 @@
     font-size: 14px;
     bottom: 80%;
     left: 0;
-    max-width: 100px;
     width: fit-content;
     z-index: 100;
 
