@@ -98,8 +98,10 @@ export function createFunc(){
                     if(target_date){
                         var events_list_arry = JSON.parse(target_date.meta_value);
                         for(let i = 0; i < Object.keys(events_list_arry).length; i++){
-                            events_list += 
-                                '<a class="rc-event__btn" data-date="' +year + '-' + month + '-' + day + '" data-meta='+ events_name +' data-eventnum=' + i + '>' + events_list_arry[i].event_name + '</a>';
+                            if(events_list_arry[i].event_name !== ''){
+                                events_list += 
+                                    '<a class="rc-event__btn" data-date="' +year + '-' + month + '-' + day + '" data-meta='+ events_name +' data-eventnum=' + i + '>' + events_list_arry[i].event_name + '</a>';
+                            }
                         }
                     }else{
                         events_list = '';
