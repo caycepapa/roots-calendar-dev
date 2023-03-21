@@ -5,27 +5,7 @@ include_once( 'config.php' );
 class CalendarPublicView{
 
     function rc_calset_form($post_id){
-
         global $wpdb;
-
-        /* 
-        status取得
-        ---------------------------------------------- */
-        $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_status_%'";
-        $rc_status = $wpdb->get_results($sql_status , ARRAY_A);
-
-        /* 
-        events取得
-        ---------------------------------------------- */
-        $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_events_%'";
-        $rc_events = $wpdb->get_results($sql_events , ARRAY_A);
-
-        /* 
-        status設定取得
-        ---------------------------------------------- */
-        $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
-        $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name , ARRAY_A);
-
         /* 
         option取得
         ---------------------------------------------- */
@@ -37,79 +17,26 @@ class CalendarPublicView{
         /* 
         カレンダー生成
         ---------------------------------------------- */
-        $ym = date('Y-m');
+        $today_num      = date('j');
+        $today_year     = date('Y');
+        $today_month    = date('m');
 
-        // タイムスタンプを作成し、フォーマットをチェックする
-        $timestamp = strtotime($ym . '-01');
-        if ($timestamp === false) {
-            $ym = date('Y-m');
-            $timestamp = strtotime($ym . '-01');
-        }
+        /* 
+        テーブル作成
+        ---------------------------------------------- */
+        echo '<div class="rc-calendar__wrap" name="rcCalendarWrap">';
+        echo '<div class="rc-calendar__header">';
+        echo '<a name="rcPrevBtn">&lt;前の月</a>';
+        echo '<h3 class="mb-5" name="rcCalendarMonthTtl"></h3>';
+        echo '<a name="rcNextBtn">次の月&gt;</a>';
+        echo '</div>';
 
+        for($i = 0; $i < $howlong_num; $i++){
+            $montha = $today_month + 0;
+            $weeks = $this->create_calendar($post_id,$today_year,$today_month);
 
-        $today = date('Y-m-d');
-        $today_num = date('j');
-        $today_month = date('m');
-
-        $html_title = date('Y年n月', $timestamp);
-
-        $day_count = date('t', $timestamp);
-        $youbi = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp)));
-
-        $weeks = [];
-        $week = '';
-
-        $week .= str_repeat('<td></td>', $youbi);
-
-        for ( $day = 1; $day <= $day_count; $day++, $youbi++) {
-
-            $date = $ym . '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
-            $bg_color        = '';
-            $rc_eve_btnclass = '';
-            $rc_eve_balloon  = '';
-
-            $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
-            $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
-
-            $bg_color = $rc_status_flg['state_color'];
-            
-            // イベント生成
-            $balloonArray = $this->create_balloon($date, $rc_events);
-
-            if($day < $today_num && $today_month == date('m', $timestamp)){
-                // 過ぎてしまった日を入れる
-                $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
-            }else{
-                // 今日以降の日
-                $today_flg = $today == $date ? 'rc_cal_today ' : '';
-                if($balloonArray){
-                    $rc_eve_btnclass     = $balloonArray['rc_eve_btnclass'];
-                    $rc_eve_balloon      = $balloonArray['rc_eve_balloon'];
-                    $bg_color            = $balloonArray['bg_color'];
-                }
-                $week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
-            }
-            $week .= '</td>';
-
-            if ($youbi % 7 == 6 || $day == $day_count) {
-
-                if ($day == $day_count) {
-                    $week .= str_repeat('<td></td>', 6 - $youbi % 7);
-                }
-
-                $weeks[] = '<tr>' . $week . '</tr>';
-                $week = '';
-            }
-        }
-
-        ?>
-            <div class="rc-calendar__wrap" id="rc-calendar">
-                <div class="rc-calendar__header">
-                    <a name="rcPrevBtn">&lt;前の月</a> 
-                    <h3 class="mb-5"><?php echo $html_title; ?></h3>
-                    <a name="rcNextBtn">次の月&gt;</a>
-                </div>
-                <table class="rc-calendar__table">
+            ?>
+                <table class="rc-calendar__table <?php echo $i == 0 ? 'rc-calendar__table--first is-current': '';?> <?php echo $i == $howlong_num - 1 ? 'rc-calendar__table--last': '';?>">
                     <tr>
                         <th>日</th>
                         <th>月</th>
@@ -125,9 +52,21 @@ class CalendarPublicView{
                         }
                     ?>
                 </table>
-            </div>
-        <?php
+                <div class="rc-calendar__label" name="rcCalendarLabel"><?php echo $today_year.'年';?><?php echo $montha.'月';?></div>
+            <?php
+
+            if($today_month >= 12){
+                $today_month = str_pad(1, 2, 0, STR_PAD_LEFT);
+                $today_year = $today_year + 1;
+            }else{
+                $today_month = $today_month + 1;
+                $today_month = str_pad($today_month, 2, 0, STR_PAD_LEFT);
+            }
+        }
+
+        echo '</div>';
     }
+
 
     function create_balloon($date,$rc_events){
 
@@ -165,8 +104,79 @@ class CalendarPublicView{
         }
     }
 
-    function create_calendar(){
+
+    function create_calendar($post_id,$year,$month){
+        global $wpdb;
+
+        /* 
+        status取得
+        ---------------------------------------------- */
+        $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_status_%'";
+        $rc_status = $wpdb->get_results($sql_status , ARRAY_A);
+
+        /* 
+        events取得
+        ---------------------------------------------- */
+        $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_events_%'";
+        $rc_events = $wpdb->get_results($sql_events , ARRAY_A);
+
+        /* 
+        status設定取得
+        ---------------------------------------------- */
+        $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
+        $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name , ARRAY_A);
+
+        $youbi = date('w', mktime(0, 0, 0, $month, 1, $year));
+        $day_count = date('t', strtotime($year.'-'.$month.'-01'));
+
+        /* 
+        カレンダー生成
+        ---------------------------------------------- */
         
+        $weeks              = [];
+        $week               = '';
+
+        $week .= str_repeat('<td></td>', $youbi);
+
+        for ( $day = 1; $day <= $day_count; $day++, $youbi++) {
+
+            $bg_color           = '';
+            $rc_eve_btnclass    = '';
+            $rc_eve_balloon     = '';
+
+            $date = $year.'-'.$month. '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
+
+            $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
+            $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
+
+            $bg_color = $rc_status_flg['state_color'];
+
+            $balloonArray   = $this->create_balloon($date, $rc_events);
+            $today_num      = date('j');
+
+            if($day < $today_num && $month == date('m')){
+                $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
+            }else{
+                $today_flg = date('Y-m-d') == $date ? 'rc_cal_today ' : '';
+                if($balloonArray){
+                    $rc_eve_btnclass     = $balloonArray['rc_eve_btnclass'];
+                    $rc_eve_balloon      = $balloonArray['rc_eve_balloon'];
+                    $bg_color            = $balloonArray['bg_color'];
+                }
+                $week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
+            }
+            $week .= '</td>';
+
+            if ($youbi % 7 == 6 || $day == $day_count) {
+                if ($day == $day_count) {
+                    $week .= str_repeat('<td></td>', 6 - $youbi % 7);
+                }
+                $weeks[] = '<tr>' . $week . '</tr>';
+                $week = '';
+            }
+        }
+
+        return $weeks;
     }
 
 }

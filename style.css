@@ -57,3 +57,15 @@
   padding: 16px;
   position: relative;
 }
+
+.rc-calendar__label {
+  display: none;
+}
+
+.rc-calendar__table {
+  display: none;
+}
+
+.rc-calendar__table--first {
+  display: block;
+}

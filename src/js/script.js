@@ -2,6 +2,7 @@
 
 import { gsap } from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
+import changeMonth from "./modules/change-month";
 import device from './modules/device.min';
 import handle from './modules/handle';
 
@@ -9,6 +10,7 @@ import handle from './modules/handle';
 init
 /////////////////////// */
 handle();
+changeMonth();
 //viewport();
 
 var rc_cal_day = document.getElementsByClassName('rc_cal_day');
@@ -40,3 +42,4 @@ for(var i = 0; i < rc_cal_day.length; i++){
         }
     });
 }
+
