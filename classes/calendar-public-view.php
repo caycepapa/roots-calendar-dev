@@ -32,14 +32,12 @@ class CalendarPublicView{
         $option_table_name = $wpdb->prefix . RC_Config::OPTION_TABLE;
         $option_records = $wpdb->get_results("SELECT * FROM ".$option_table_name);
         $howlong = $option_records[array_search('公開月数', array_column($option_records, 'option_name'))];
+        $howlong_num = $howlong->option_value;
 
-        // $howlong->option_value
-
-        if (isset($_GET['ym'])) {
-            $ym = $_GET['ym'];
-        } else {
-            $ym = date('Y-m');
-        }
+        /* 
+        カレンダー生成
+        ---------------------------------------------- */
+        $ym = date('Y-m');
 
         // タイムスタンプを作成し、フォーマットをチェックする
         $timestamp = strtotime($ym . '-01');
@@ -48,40 +46,12 @@ class CalendarPublicView{
             $timestamp = strtotime($ym . '-01');
         }
 
+
         $today = date('Y-m-d');
         $today_num = date('j');
         $today_month = date('m');
 
         $html_title = date('Y年n月', $timestamp);
-
-        /* 
-        翌月のボタン
-        ---------------------------------------------- */
-        $nextMonth =  date('m', $timestamp) + 1;
-        $prevMonth =  date('m', $timestamp);
-        $optionValue = $howlong->option_value;
-        $viewMonth = date('m') + $optionValue;
-
-        if($viewMonth >= 12){
-            $viewMonth = $viewMonth - 12;
-        }
-
-        if($optionValue == 1){
-            $prev = '';
-            $next = '';
-        }else{
-            if($nextMonth == $viewMonth){
-                $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
-                $next = '';
-            }elseif($today_month == $prevMonth){
-                $prev = '';
-                $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp)));
-            }else{
-                $prev = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)-1, 1, date('Y', $timestamp)));
-                $next = date('Y-m', mktime(0, 0, 0, date('m', $timestamp)+1, 1, date('Y', $timestamp))); 
-            }
-        }
-
 
         $day_count = date('t', $timestamp);
         $youbi = date('w', mktime(0, 0, 0, date('m', $timestamp), 1, date('Y', $timestamp)));
@@ -94,48 +64,30 @@ class CalendarPublicView{
         for ( $day = 1; $day <= $day_count; $day++, $youbi++) {
 
             $date = $ym . '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
-            $bg_color = '';
+            $bg_color        = '';
+            $rc_eve_btnclass = '';
+            $rc_eve_balloon  = '';
 
             $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
             $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
 
             $bg_color = $rc_status_flg['state_color'];
             
-            // eventsの配列番号を返す
-            $event_num = array_search('rc_events_'.$date, array_column($rc_events, 'meta_key'));
-            $rc_eve_balloon = '';
-            $rc_eve_btnclass = '';
+            // イベント生成
+            $balloonArray = $this->create_balloon($date, $rc_events);
 
-            /* 
-            eventが存在する場合
-            ---------------------------------------------- */
-            if(is_int($event_num)){
-
-                $rc_eve = $rc_events[$event_num];
-                $rc_eve_array = json_decode($rc_eve['meta_value'],true);
-                $rc_eve_balloon = '<div class="rc_cal_balloon">';
-
-                for($i = 0; $i < count($rc_eve_array); $i++){
-                    if($rc_eve_array[$i]['event_name'] !== ''){
-                        $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
-                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
-                        
-                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                        $bg_color = $rc_eve_array[$i]['event_color'];
-                    }
+            if($day < $today_num && $today_month == date('m', $timestamp)){
+                // 過ぎてしまった日を入れる
+                $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
+            }else{
+                // 今日以降の日
+                $today_flg = $today == $date ? 'rc_cal_today ' : '';
+                if($balloonArray){
+                    $rc_eve_btnclass     = $balloonArray['rc_eve_btnclass'];
+                    $rc_eve_balloon      = $balloonArray['rc_eve_balloon'];
+                    $bg_color            = $balloonArray['bg_color'];
                 }
-
-                $rc_eve_balloon .= '</div>';
-            }
-
-            if ($today == $date) {
-                $week .= '<td class="rc_cal_day rc_cal_today '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
-            } else {
-                if($day < $today_num && $today_month == date('m', $timestamp)){
-                    $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
-                }else{
-                    $week .= '<td class="rc_cal_day '.$rc_eve_btnclass.'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
-                }
+                $week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
             }
             $week .= '</td>';
 
@@ -153,17 +105,9 @@ class CalendarPublicView{
         ?>
             <div class="rc-calendar__wrap" id="rc-calendar">
                 <div class="rc-calendar__header">
-                    <?php if(!empty($prev)):?>
-                    <a href="?ym=<?php echo $prev; ?>#rc-calendar">&lt;前の月</a> 
-                    <?php else: ?>
-                    <span>&lt;前の月</span> 
-                    <?php endif; ?>
+                    <a name="rcPrevBtn">&lt;前の月</a> 
                     <h3 class="mb-5"><?php echo $html_title; ?></h3>
-                    <?php if(!empty($next)): ?>
-                    <a href="?ym=<?php echo $next; ?>#rc-calendar">次の月&gt;</a>
-                    <?php else: ?>
-                    <span>次の月&gt;</span>
-                    <?php endif;?>
+                    <a name="rcNextBtn">次の月&gt;</a>
                 </div>
                 <table class="rc-calendar__table">
                     <tr>
@@ -184,5 +128,43 @@ class CalendarPublicView{
             </div>
         <?php
     }
+
+    function create_balloon($date,$rc_events){
+
+        $event_num = array_search('rc_events_'.$date, array_column($rc_events, 'meta_key'));
+        $rc_eve_balloon = '';
+        $rc_eve_btnclass = '';
+
+        if(is_int($event_num)){
+            $rc_eve = $rc_events[$event_num];
+            $rc_eve_array = json_decode($rc_eve['meta_value'],true);
+            $rc_eve_balloon = '<div class="rc_cal_balloon">';
+
+            for($i = 0; $i < count($rc_eve_array); $i++){
+                if($rc_eve_array[$i]['event_name'] !== ''){
+                    $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
+                    $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                    
+                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                    $bg_color = $rc_eve_array[$i]['event_color'];
+                }
+            }
+
+            $rc_eve_balloon .= '</div>';
+
+            $balloonArray = array(
+                'rc_eve_btnclass' => $rc_eve_btnclass,
+                'rc_eve_balloon' => $rc_eve_balloon,
+                'bg_color' => $bg_color
+            );
+
+            return $balloonArray;
+
+        }else{
+            return false;
+        }
+    }
+
+    function create_
 
 }
