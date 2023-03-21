@@ -165,6 +165,8 @@ class CalendarPublicView{
         }
     }
 
-    function create_
+    function create_calendar(){
+        
+    }
 
 }
