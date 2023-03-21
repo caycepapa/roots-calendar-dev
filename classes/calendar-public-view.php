@@ -79,6 +79,7 @@ class CalendarPublicView{
         $event_num = array_search('rc_events_'.$date, array_column($rc_events, 'meta_key'));
         $rc_eve_balloon = '';
         $rc_eve_btnclass = '';
+        $bg_color = '';
 
         if(is_int($event_num)){
             $rc_eve = $rc_events[$event_num];
