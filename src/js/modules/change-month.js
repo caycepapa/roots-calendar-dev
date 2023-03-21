@@ -5,18 +5,34 @@ export default function(){
     var rcPrevBtn = document.getElementsByName('rcPrevBtn');
     for(let i = 0; i < rcPrevBtn.length; i++){
         rcPrevBtn[i].addEventListener('click',function(){
-            show_table(rcPrevBtn[i],'prev');
-        })
+            if(rcPrevBtn[i].classList.contains('is-blank')){
+                return false;
+            }else{
+                show_table(rcPrevBtn[i],'prev');
+            }
+        });
     }
 
     var rcNextBtn = document.getElementsByName('rcNextBtn');
     for(let i = 0; i < rcNextBtn.length; i++){
         rcNextBtn[i].addEventListener('click',function(){
-            show_table(rcNextBtn[i],'next');
-        })
+            if(rcNextBtn[i].classList.contains('is-blank')){
+                return false;
+            }else{
+                show_table(rcNextBtn[i],'next');
+            }
+        });
     }
 
     var show_table = (btnElem,flg) => {
+
+        for(let i = 0; i < rcPrevBtn.length; i++){
+            rcPrevBtn[i].classList.remove('is-blank');
+        }
+
+        for(let i = 0; i < rcNextBtn.length; i++){
+            rcNextBtn[i].classList.remove('is-blank');
+        }
         
         var rcHeader = btnElem.parentElement;
         var rcWrap = rcHeader.parentElement;
@@ -43,7 +59,16 @@ export default function(){
         }
 
         var nextTable = rcWrap.querySelector('.is-current');
+        
+        if(nextTable.classList.contains('rc-calendar__table--first')){
+            rcPrevBtn[0].classList.add('is-blank');
+        }
+        if(nextTable.classList.contains('rc-calendar__table--last')){
+            rcNextBtn[0].classList.add('is-blank');
+        }
+
         var targetLabel = nextTable.nextElementSibling;
+
         set_ttl(targetLabel.innerText);
     }
 

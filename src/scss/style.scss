@@ -80,3 +80,11 @@
 .rc-calendar__table--first{
     display: block;
 }
+
+.rc-calendar__btn{
+    &.is-blank{
+        opacity: .5;
+        cursor: default;
+        text-decoration: none;
+    }
+}

@@ -24,11 +24,17 @@ class CalendarPublicView{
         /* 
         テーブル作成
         ---------------------------------------------- */
+        if($howlong_num == 1){
+            $lastBlank = 'is-blank';
+        }else{
+            $lastBlank = '';
+        }
+
         echo '<div class="rc-calendar__wrap" name="rcCalendarWrap">';
         echo '<div class="rc-calendar__header">';
-        echo '<a name="rcPrevBtn">&lt;前の月</a>';
+        echo '<a class="rc-calendar__btn is-blank" name="rcPrevBtn">&lt;前の月</a>';
         echo '<h3 class="mb-5" name="rcCalendarMonthTtl"></h3>';
-        echo '<a name="rcNextBtn">次の月&gt;</a>';
+        echo '<a class="rc-calendar__btn '. $lastBlank .'" name="rcNextBtn">次の月&gt;</a>';
         echo '</div>';
 
         for($i = 0; $i < $howlong_num; $i++){
