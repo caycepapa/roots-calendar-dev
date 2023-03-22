@@ -78,7 +78,7 @@ export default function(){
 
     var set_ttl = (ttlTxt) =>{
         var ttl_dom = document.getElementsByName('rcCalendarMonthTtl');
-        for(i = 0; i < ttl_dom.length; i++){
+        for(let i = 0; i < ttl_dom.length; i++){
             ttl_dom[i].innerText = ttlTxt;
         }
     }
