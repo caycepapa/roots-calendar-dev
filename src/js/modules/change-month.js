@@ -49,13 +49,11 @@ export default function(){
         }
 
         if(flg == 'prev'){
-            tables[tableIndex - 1].style.display = 'block';
             tables[tableIndex - 1].classList.add('is-current');
         }else if(flg == 'next'){
-            tables[tableIndex + 1].style.display = 'block';
             tables[tableIndex + 1].classList.add('is-current');
         }else{
-            tables[tableIndex].style.display = 'block';
+            
         }
 
         var nextTable = rcWrap.querySelector('.is-current');

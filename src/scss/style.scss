@@ -75,6 +75,10 @@
 
 .rc-calendar__table{
     display: none;
+
+    &.is-current{
+        display: table;
+    }
 }
 
 .rc-calendar__table--first{

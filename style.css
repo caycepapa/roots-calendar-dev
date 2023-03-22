@@ -65,6 +65,9 @@
 .rc-calendar__table {
   display: none;
 }
+.rc-calendar__table.is-current {
+  display: table;
+}
 
 .rc-calendar__table--first {
   display: block;
