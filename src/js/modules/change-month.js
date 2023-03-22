@@ -77,5 +77,4 @@ export default function(){
         ttl_dom.innerText = ttlTxt;
     }
 
-    var rcCalendarLabel = document.getElementsByName('rcCalendarLabel')[0];
 }
