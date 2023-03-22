@@ -78,6 +78,4 @@ export default function(){
     }
 
     var rcCalendarLabel = document.getElementsByName('rcCalendarLabel')[0];
-
-    set_ttl(rcCalendarLabel.innerText);
 }
