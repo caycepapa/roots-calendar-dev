@@ -61,10 +61,14 @@ export default function(){
         var nextTable = rcWrap.querySelector('.is-current');
         
         if(nextTable.classList.contains('rc-calendar__table--first')){
-            rcPrevBtn[0].classList.add('is-blank');
+            for(let i = 0; i < rcPrevBtn.length; i++){
+                rcPrevBtn[i].classList.add('is-blank');
+            }
         }
         if(nextTable.classList.contains('rc-calendar__table--last')){
-            rcNextBtn[0].classList.add('is-blank');
+            for(let i = 0; i < rcPrevBtn.length; i++){
+                rcNextBtn[i].classList.add('is-blank');
+            }
         }
 
         var targetLabel = nextTable.nextElementSibling;
