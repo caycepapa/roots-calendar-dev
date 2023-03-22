@@ -39,7 +39,7 @@ class CalendarPublicView{
         echo '</div>';
 
         for($i = 0; $i < $howlong_num; $i++){
-            
+            $montha = $today_month + 0;
             $weeks = $this->create_calendar($post_id,$today_year,$today_month);
 
             ?>
