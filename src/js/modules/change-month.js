@@ -49,8 +49,10 @@ export default function(){
         }
 
         if(flg == 'prev'){
+            tables[tableIndex - 1].style.display = 'table';
             tables[tableIndex - 1].classList.add('is-current');
         }else if(flg == 'next'){
+            tables[tableIndex + 1].style.display = 'table';
             tables[tableIndex + 1].classList.add('is-current');
         }else{
             
