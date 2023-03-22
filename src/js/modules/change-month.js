@@ -77,8 +77,10 @@ export default function(){
     }
 
     var set_ttl = (ttlTxt) =>{
-        var ttl_dom = document.getElementsByName('rcCalendarMonthTtl')[0];
-        ttl_dom.innerText = ttlTxt;
+        var ttl_dom = document.getElementsByName('rcCalendarMonthTtl');
+        for(i = 0; i < ttl_dom.length; i++){
+            ttl_dom[i].innerText = ttlTxt;
+        }
     }
 
 }
