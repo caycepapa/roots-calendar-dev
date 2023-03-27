@@ -51,7 +51,7 @@ class CalendarPublicViewList{
             $listdom .= '<div>'.date('n',strtotime($day)).'/'.date('j',strtotime($day)).'（'.$weekday.'）'.'</div>';
 
             if($balloonArray){
-                $listdom .= $balloonArray['rc_eve_balloon'];
+                $listdom .= '<div>'.$balloonArray['rc_eve_balloon'].'</div>';
             }else{
                 $listdom .= '<div>'.$rc_status_flg['state_txt'].'</div>';
             }
