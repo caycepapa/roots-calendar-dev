@@ -4,7 +4,7 @@ include_once( 'config.php' );
 
 class CalendarPublicViewList{
 
-    function rc_calset_form($post_id){
+    function rc_calset_form($post_id,$listnum){
         global $wpdb;
 
         /* 
@@ -28,10 +28,18 @@ class CalendarPublicViewList{
         $today_num      = date('j');
         $today_year     = date('Y');
         $today_month    = date('m');
+        $litnum_txt     = '+'.$listnum.' day';
 
-        for ( $day = $today_num; $day <= $today_num + 10; $day++) {
+        $start = $today_year.'-'.$today_month.'-'.$today_num;
+        $end   = date('Y-m-j', strtotime($today_year . $litnum_txt));
+        $listdom = '';
 
-            $date = $today_year.'-'.$today_month. '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
+        for ( $day = $start; $day <= $end; $day = date('Y-m-j', strtotime($day . '+1 day'))) {
+
+            $date = date('Y',strtotime($day)).'-'.date('m',strtotime($day)). '-' . str_pad(date('j',strtotime($day)), 2, 0, STR_PAD_LEFT);
+
+            $week = date('w', strtotime($date));
+            $weekday = ["日", "月", "火", "水", "木", "金", "土"][$week];
 
             $balloonArray   = $this->create_balloon($date, $rc_events);
 
@@ -39,16 +47,19 @@ class CalendarPublicViewList{
 
             $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
 
-            echo '<li>';
+            $listdom .= '<li>';
+            $listdom .= '<div>'.date('n',strtotime($day)).'/'.date('j',strtotime($day)).'（'.$weekday.'）'.'</div>';
 
             if($balloonArray){
-                echo $balloonArray['rc_eve_balloon'];
+                $listdom .= $balloonArray['rc_eve_balloon'];
             }else{
-                echo $rc_status_flg['state_txt'];
+                $listdom .= '<div>'.$rc_status_flg['state_txt'].'</div>';
             }
 
-            echo '</li>';
+            $listdom .= '</li>';
         }
+
+        echo $listdom;
 
     }
 

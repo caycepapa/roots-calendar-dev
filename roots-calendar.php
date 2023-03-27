@@ -151,7 +151,7 @@ class RootsCalendar{
                 echo '[roots-calendar-key-day num='.$post_id.']';
             }
             if($column_name == 'shortcode03'){
-                echo '[roots-calendar-key-list num='.$post_id.']';
+                echo '[roots-calendar-key-list num='.$post_id.' listnum=10]';
             }
         }
 
@@ -180,7 +180,7 @@ class RootsCalendar{
             include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-public-view-list.php' );
             $calendar = new CalendarPublicViewList();
             ob_start();
-            echo $calendar->rc_calset_form($atts['num']);
+            echo $calendar->rc_calset_form($atts['num'],$atts['listnum']);
             return ob_get_clean();
         }
         add_shortcode('roots-calendar-key-list','roots_calendar_key_list_func');
