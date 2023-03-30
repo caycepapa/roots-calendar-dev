@@ -34,15 +34,15 @@
   width: fit-content;
   z-index: 100;
 }
-.rc_cal_balloon a {
+.rc_cal_balloon a, .rc_cal_balloon span {
   display: block;
   text-align: left;
   white-space: nowrap;
 }
-.rc_cal_balloon a::before {
+.rc_cal_balloon a::before, .rc_cal_balloon span::before {
   content: "・";
 }
-.rc_cal_balloon a:not(:first-child) {
+.rc_cal_balloon a:not(:first-child), .rc_cal_balloon span:not(:first-child) {
   margin-top: 4px;
 }
 

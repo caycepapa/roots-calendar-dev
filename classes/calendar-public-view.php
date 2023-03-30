@@ -89,9 +89,13 @@ class CalendarPublicView{
 
             for($i = 0; $i < count($rc_eve_array); $i++){
                 if($rc_eve_array[$i]['event_name'] !== ''){
-                    $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
-                    $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
-                    
+                    if($rc_eve_array[$i]['event_url'] !== ''){
+                        $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
+                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                    }else{
+                        $rc_eve_balloon .= '<span>';
+                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+                    }
                     $rc_eve_btnclass = 'rc_cal_btn--hasevent';
                     $bg_color = $rc_eve_array[$i]['event_color'];
                 }
