@@ -36,7 +36,6 @@
 .rc_cal_balloon a, .rc_cal_balloon span {
   display: block;
   text-align: left;
-  white-space: nowrap;
   line-height: 1.2;
   padding-left: 1em;
   text-indent: -1em;
