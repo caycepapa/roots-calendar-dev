@@ -38,13 +38,16 @@
     font-size: 14px;
     bottom: 80%;
     left: 0;
-    width: fit-content;
+    width: 180px;
     z-index: 100;
 
     a,span{
         display: block;
         text-align: left;
         white-space: nowrap;
+        line-height: 1.2;
+        padding-left: 1em;
+        text-indent: -1em;
 
         &::before{
             content: '・';
