@@ -25,17 +25,18 @@ class CalendarPublicViewList{
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
         $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name , ARRAY_A);
 
-        $today_num      = date('j');
+        $today_num      = date('d');
         $today_year     = date('Y');
         $today_month    = date('m');
         $litnum_txt     = '+'.$listnum.' day';
 
         $start = $today_year.'-'.$today_month.'-'.$today_num;
-        $end   = date('Y-m-j', strtotime($today_year . $litnum_txt));
+        $end   = date('Y-m-d', strtotime($today_year . $litnum_txt));
         $listdom = '';
 
-        for ( $day = $start; $day <= $end; $day = date('Y-m-j', strtotime($day . '+1 day'))) {
 
+        for ( $day = $start; $day <= $end; $day = date('Y-m-d', strtotime($day . '+1 day'))) {
+            
             $date = date('Y',strtotime($day)).'-'.date('m',strtotime($day)). '-' . str_pad(date('j',strtotime($day)), 2, 0, STR_PAD_LEFT);
 
             $week = date('w', strtotime($date));
