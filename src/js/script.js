@@ -33,7 +33,14 @@ var remove_balloon = () => {
 }
 
 for(var i = 0; i < rc_cal_day.length; i++){
-    rc_cal_day[i].addEventListener('click',function(){
+
+    if(device.mobile()){
+        var click_event = 'touchstart';
+    }else{
+        var click_event = 'mouseover';
+    }
+
+    rc_cal_day[i].addEventListener(click_event,function(){
         let rc_cal_day_hasevent = this.querySelectorAll('.rc_cal_balloon');
         if(rc_cal_day_hasevent.length !== 0){
             click_action(this);
