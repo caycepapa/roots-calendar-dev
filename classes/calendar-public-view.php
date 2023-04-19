@@ -75,6 +75,15 @@ class CalendarPublicView{
     }
 
 
+    function balloon_checker($data){
+        for($i = 0; $i < count($data); $i++){
+            if($data[$i]['event_name'] !== ''){
+                return true;
+            }
+        }
+    }
+
+
     function create_balloon($date,$rc_events){
 
         $event_num = array_search('rc_events_'.$date, array_column($rc_events, 'meta_key'));
@@ -85,23 +94,24 @@ class CalendarPublicView{
         if(is_int($event_num)){
             $rc_eve = $rc_events[$event_num];
             $rc_eve_array = json_decode($rc_eve['meta_value'],true);
-            $rc_eve_balloon = '<div class="rc_cal_balloon">';
 
-            for($i = 0; $i < count($rc_eve_array); $i++){
-                if($rc_eve_array[$i]['event_name'] !== ''){
-                    if($rc_eve_array[$i]['event_url'] !== ''){
-                        $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
-                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
-                    }else{
-                        $rc_eve_balloon .= '<span>';
-                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+            if($this->balloon_checker($rc_eve_array)){
+                $rc_eve_balloon .= '<div class="rc_cal_balloon">';
+                for($i = 0; $i < count($rc_eve_array); $i++){
+                    if($rc_eve_array[$i]['event_name'] !== ''){
+                        if($rc_eve_array[$i]['event_url'] !== ''){
+                            $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
+                            $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                        }else{
+                            $rc_eve_balloon .= '<span>';
+                            $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+                        }
+                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                        $bg_color = $rc_eve_array[$i]['event_color'];
                     }
-                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                    $bg_color = $rc_eve_array[$i]['event_color'];
                 }
+                $rc_eve_balloon .= '</div>';
             }
-
-            $rc_eve_balloon .= '</div>';
 
             $balloonArray = array(
                 'rc_eve_btnclass' => $rc_eve_btnclass,
