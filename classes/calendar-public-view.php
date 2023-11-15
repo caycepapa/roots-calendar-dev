@@ -93,6 +93,8 @@ class CalendarPublicView{
 
         if(is_int($event_num)){
             $rc_eve = $rc_events[$event_num];
+            $rc_eve = str_replace("\'", "&#39;", $rc_eve);
+            $rc_eve = str_replace('\"', "&quot;", $rc_eve);
             $rc_eve_array = json_decode($rc_eve['meta_value'],true);
 
             if($this->balloon_checker($rc_eve_array)){

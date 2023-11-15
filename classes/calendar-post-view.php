@@ -30,19 +30,24 @@ class CalendarPostView{
         // rc_statusをphpの配列からjsの配列へ
         $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_status_%'";
         $rc_status = $wpdb->get_results($sql_status,OBJECT);
-        $rc_status_array = json_encode($rc_status);
+        $rc_status_array = json_encode($rc_status,JSON_PRETTY_PRINT);
         echo '<script>var rc_status_array = '.$rc_status_array.'</script>';
 
         // rc_eventsをphpの配列からjsの配列へ
         $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_events_%'";
-        $rc_events = $wpdb->get_results($sql_events,OBJECT);
-        $rc_events_array = json_encode($rc_events);
+        $rc_events = $wpdb->get_results($sql_events, OBJECT);
+        // シングルクウォートのエスケープを取り除く
+        foreach ($rc_events as &$event) {
+            $event->meta_value = str_replace("\\'", "&#39;", $event->meta_value);
+            $event->meta_value = str_replace('\\"', "&quot;", $event->meta_value);
+        }
+        $rc_events_array = json_encode($rc_events, JSON_PRETTY_PRINT);
         echo '<script>var rc_events_array = '.$rc_events_array.'</script>';
 
         // setting
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
         $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name);
-        $setting_records_array = json_encode($setting_records);
+        $setting_records_array = json_encode($setting_records,JSON_PRETTY_PRINT);
         echo '<script>var setting_records_array = '.$setting_records_array.'</script>';
 
         $month  = '2';
