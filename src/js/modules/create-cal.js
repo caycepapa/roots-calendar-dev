@@ -19,23 +19,27 @@ export function createFunc(){
         -----------------------------------------*/
         function showProcess(date) {
 
-            var year = date.getFullYear();
-            var month = date.getMonth();
-
             for(let i = 0; i <showNum ; i++ ){
+
+                var year = date.getFullYear();
+                var month = date.getMonth();
 
                 // 1月分のカレンダーwrap
                 var calBoxInner = document.createElement('div');
                 calBoxInner.className = 'rc-calbox';
 
                 if(month + i + 1 <= 12){
-                    calBoxInner.innerHTML = '<div class="rc-calbox__header"><h2 class="rc-calbox__ttl">' + year + "年 " + (month + i + 1) + "月" + '</h2><label><input type="checkbox" name="calAllChangeCheckboxMonth" value="allCheckFlg">この月をすべて選択/解除</label></div>';
+                    month = month + i;
+                    calBoxInner.innerHTML = '<div class="rc-calbox__header"><h2 class="rc-calbox__ttl">' + year + "年 " + (month+1) + "月" + '</h2><label><input type="checkbox" name="calAllChangeCheckboxMonth" value="allCheckFlg">この月をすべて選択/解除</label></div>';
                 }else{
-                    calBoxInner.innerHTML = '<div class="rc-calbox__header"><h2 class="rc-calbox__ttl">' + (year+1) + "年 " + (month + i + 1 - 12) + "月" + '</h2><label><input type="checkbox" name="calAllChangeCheckboxMonth" value="allCheckFlg">この月をすべて選択/解除</label></div>';
+                    month = month + i - 12;
+                    year = year + 1;
+                    calBoxInner.innerHTML = '<div class="rc-calbox__header"><h2 class="rc-calbox__ttl">' + year + "年 " + (month+1) + "月" + '</h2><label><input type="checkbox" name="calAllChangeCheckboxMonth" value="allCheckFlg">この月をすべて選択/解除</label></div>';
                 }
 
                 var calBoxTable = document.createElement('table');
-                calBoxTable.innerHTML += createProcess(year, month + i);
+                
+                calBoxTable.innerHTML += createProcess(year, month);
 
                 calBoxInner.appendChild(calBoxTable);
                 calBox.appendChild(calBoxInner);

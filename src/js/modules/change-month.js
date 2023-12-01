@@ -1,39 +1,38 @@
 "use strict";
 
 export default function(){
+    // 各カレンダーを囲むコンテナを選択
+    var calendarContainers = document.querySelectorAll('.rc-calendar__wrap'); // '.rc-calendar-container' は各カレンダーコンテナのクラス名と仮定
 
-    var rcPrevBtn = document.getElementsByName('rcPrevBtn');
-    for(let i = 0; i < rcPrevBtn.length; i++){
-        rcPrevBtn[i].addEventListener('click',function(){
-            if(rcPrevBtn[i].classList.contains('is-blank')){
-                return false;
-            }else{
-                show_table(rcPrevBtn[i],'prev');
-            }
+    calendarContainers.forEach(function(container) {
+        var rcPrevBtn = container.querySelectorAll('[name="rcPrevBtn"]');
+        var rcNextBtn = container.querySelectorAll('[name="rcNextBtn"]');
+
+        rcPrevBtn.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if(!btn.classList.contains('is-blank')){
+                    show_table(btn, 'prev', container);
+                }
+            });
         });
-    }
 
-    var rcNextBtn = document.getElementsByName('rcNextBtn');
-    for(let i = 0; i < rcNextBtn.length; i++){
-        rcNextBtn[i].addEventListener('click',function(){
-            if(rcNextBtn[i].classList.contains('is-blank')){
-                return false;
-            }else{
-                show_table(rcNextBtn[i],'next');
-            }
+        rcNextBtn.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                if(!btn.classList.contains('is-blank')){
+                    show_table(btn, 'next', container);
+                }
+            });
         });
-    }
+    });
 
-    var show_table = (btnElem,flg) => {
+    var show_table = (btnElem, flg, container) => {
+        var rcPrevBtn = container.querySelectorAll('[name="rcPrevBtn"]');
+        var rcNextBtn = container.querySelectorAll('[name="rcNextBtn"]');
 
-        for(let i = 0; i < rcPrevBtn.length; i++){
-            rcPrevBtn[i].classList.remove('is-blank');
-        }
+        // 全てのボタンの 'is-blank' クラスを削除
+        rcPrevBtn.forEach(btn => btn.classList.remove('is-blank'));
+        rcNextBtn.forEach(btn => btn.classList.remove('is-blank'));
 
-        for(let i = 0; i < rcNextBtn.length; i++){
-            rcNextBtn[i].classList.remove('is-blank');
-        }
-        
         var rcHeader = btnElem.parentElement;
         var rcWrap = rcHeader.parentElement;
 
@@ -41,7 +40,7 @@ export default function(){
         var currentTable = rcWrap.querySelector('.is-current');
         
         var tablesArray = [].slice.call(tables);
-        var tableIndex = tablesArray.indexOf( currentTable );
+        var tableIndex = tablesArray.indexOf(currentTable);
         
         for(let i = 0; i < tables.length; i++){
             tables[i].style.display = 'none';
@@ -51,36 +50,26 @@ export default function(){
         if(flg == 'prev'){
             tables[tableIndex - 1].style.display = 'table';
             tables[tableIndex - 1].classList.add('is-current');
-        }else if(flg == 'next'){
+        } else if(flg == 'next'){
             tables[tableIndex + 1].style.display = 'table';
             tables[tableIndex + 1].classList.add('is-current');
-        }else{
-            
         }
 
         var nextTable = rcWrap.querySelector('.is-current');
         
         if(nextTable.classList.contains('rc-calendar__table--first')){
-            for(let i = 0; i < rcPrevBtn.length; i++){
-                rcPrevBtn[i].classList.add('is-blank');
-            }
+            rcPrevBtn.forEach(btn => btn.classList.add('is-blank'));
         }
         if(nextTable.classList.contains('rc-calendar__table--last')){
-            for(let i = 0; i < rcPrevBtn.length; i++){
-                rcNextBtn[i].classList.add('is-blank');
-            }
+            rcNextBtn.forEach(btn => btn.classList.add('is-blank'));
         }
 
         var targetLabel = nextTable.nextElementSibling;
-
-        set_ttl(targetLabel.innerText);
+        set_ttl(targetLabel.innerText, container);
     }
 
-    var set_ttl = (ttlTxt) =>{
-        var ttl_dom = document.getElementsByName('rcCalendarMonthTtl');
-        for(let i = 0; i < ttl_dom.length; i++){
-            ttl_dom[i].innerText = ttlTxt;
-        }
+    var set_ttl = (ttlTxt, container) => {
+        var ttl_dom = container.querySelectorAll('[name="rcCalendarMonthTtl"]');
+        ttl_dom.forEach(dom => dom.innerText = ttlTxt);
     }
-
 }
