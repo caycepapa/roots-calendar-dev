@@ -117,6 +117,11 @@ class CalendarPostView{
                 update_post_meta($post_id, $key , $data);
             }elseif(preg_match('/rc_status_/', $key)){
                 $data = sanitize_text_field($_POST[$key]);
+
+                if(get_post_meta($post_id, $key)){
+                    delete_post_meta($post_id, $key);
+                }
+                
                 update_post_meta($post_id, $key , $data);
             }
         }
