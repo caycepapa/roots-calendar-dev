@@ -90,6 +90,7 @@ class CalendarPublicView{
         $rc_eve_balloon = '';
         $rc_eve_btnclass = '';
         $bg_color = '';
+        $hasValidEvent = false;
 
         if(is_int($event_num)){
             $rc_eve = $rc_events[$event_num];
@@ -101,6 +102,7 @@ class CalendarPublicView{
                 $rc_eve_balloon .= '<div class="rc_cal_balloon">';
                 for($i = 0; $i < count($rc_eve_array); $i++){
                     if($rc_eve_array[$i]['event_name'] !== ''){
+                        $hasValidEvent = true;
                         if($rc_eve_array[$i]['event_url'] !== ''){
                             $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
                             $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
@@ -118,7 +120,8 @@ class CalendarPublicView{
             $balloonArray = array(
                 'rc_eve_btnclass' => $rc_eve_btnclass,
                 'rc_eve_balloon' => $rc_eve_balloon,
-                'bg_color' => $bg_color
+                'bg_color' => $bg_color,
+                'rc_eve_flg' => $hasValidEvent
             );
 
             return $balloonArray;
@@ -173,7 +176,11 @@ class CalendarPublicView{
             $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
             $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
 
-            $bg_color = $rc_status_flg['state_color'];
+            if(!empty($rc_date['meta_value'])){
+                $bg_color = $rc_status_flg['state_color'];
+            }else{
+                $bg_color = "#FFF";
+            }
 
             $balloonArray   = $this->create_balloon($date, $rc_events);
             $today_num      = date('j');
@@ -182,12 +189,18 @@ class CalendarPublicView{
                 $week .= '<td class="rc_cal_day rc_cal_day--end"><div class="rc_cal_day_wrap"><p>' . $day . '</p></div>';
             }else{
                 $today_flg = date('Y-m-d') == $date ? 'rc_cal_today ' : '';
-                if($balloonArray){
+
+                if($balloonArray['rc_eve_flg'] == true){
                     $rc_eve_btnclass     = $balloonArray['rc_eve_btnclass'];
                     $rc_eve_balloon      = $balloonArray['rc_eve_balloon'];
                     $bg_color            = $balloonArray['bg_color'];
+                }else{
+                    $rc_eve_btnclass = '';
+                    $rc_eve_balloon = '';
                 }
-                $week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
+				
+				$week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
+                
             }
             $week .= '</td>';
 
