@@ -29,4 +29,4 @@ jobs:
         cd deploy
         git add .
         git commit -m "Deploy from dev repo at $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
-        git push origin main
+        git push origin master
