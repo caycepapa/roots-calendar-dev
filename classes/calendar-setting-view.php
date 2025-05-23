@@ -52,7 +52,7 @@ class CalendarSettingView{
             if(isset($_POST['cal_setting'])){
                 $cal_settings = $_POST['cal_setting'];
                 foreach($cal_settings as $cal_setting){
-                    if($cal_setting['delete']){
+                    if(isset($cal_setting['delete']) && $cal_setting['delete']){
                         $wpdb->delete(
                             $table_name,
                             array( 'id' =>  $cal_setting['state_id']) 
