@@ -2,7 +2,7 @@
 /*
 Plugin Name: roots-calendar
 Description: rootsのカレンダー
-Version: 1.0
+Version: 1.1
 */
 
 if ( ! defined( 'ABSPATH' ) ) exit;
