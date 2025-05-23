@@ -183,6 +183,7 @@ class CalendarPublicView{
             }
 
             $balloonArray   = $this->create_balloon($date, $rc_events);
+            
             $today_num      = date('j');
 
             if($day < $today_num && $month == date('m')){
@@ -190,13 +191,13 @@ class CalendarPublicView{
             }else{
                 $today_flg = date('Y-m-d') == $date ? 'rc_cal_today ' : '';
 
-                if($balloonArray['rc_eve_flg'] == true){
-                    $rc_eve_btnclass     = $balloonArray['rc_eve_btnclass'];
-                    $rc_eve_balloon      = $balloonArray['rc_eve_balloon'];
-                    $bg_color            = $balloonArray['bg_color'];
-                }else{
+                if (is_array($balloonArray) && isset($balloonArray['rc_eve_flg']) && $balloonArray['rc_eve_flg'] == true) {
+                    $rc_eve_btnclass = $balloonArray['rc_eve_btnclass'];
+                    $rc_eve_balloon  = $balloonArray['rc_eve_balloon'];
+                    $bg_color        = $balloonArray['bg_color'];
+                } else {
                     $rc_eve_btnclass = '';
-                    $rc_eve_balloon = '';
+                    $rc_eve_balloon  = '';
                 }
 				
 				$week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';

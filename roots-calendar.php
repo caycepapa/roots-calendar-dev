@@ -79,10 +79,27 @@ class CustomOptionTable {
 class setMenu {
     public function __construct(){
         function rc_add_page() {
+
+            $labels = array(
+                'name'               => 'Calendar',
+                'singular_name'      => 'Calendar',
+                'add_new'            => 'Add New',
+                'add_new_item'       => 'Add New Calendar',
+                'edit_item'          => 'Edit Calendar',
+                'new_item'           => 'New Calendar',
+                'all_items'          => 'All Calendar',
+                'view_item'          => 'View Calendar',
+                'search_items'       => 'Search Calendar',
+                'not_found'          => 'No Calendar found',
+                'not_found_in_trash' => 'No Calendar found in Trash',
+                'parent_item_colon'  => '',
+                'menu_name'          => 'Calendar'
+            );
+
             register_post_type( RC_Config::NAME ,
                 array(
                     'public' => true,
-                    'label' => 'カレンダー',
+                    'label' => 'Calendar',
                     'show_in_rest' => false,
                     'supports' => array(
                         'title',
@@ -91,13 +108,8 @@ class setMenu {
                     'has_archive' => false,
                     'menu_position' => 99,
                     'menu_icon' => 'dashicons-calendar',
-                    'hierarchical' => true,
-                    'labels' => array(
-                        'menu_name' => 'カレンダー',
-                        'all_items' => 'カレンダー一覧',
-                        'add_new' => '新規カレンダー追加',
-                        'exclude_from_search' => false,
-                    ),
+                    'hierarchical' => false,
+                    'labels' => $labels,
                 )
             );
         }
