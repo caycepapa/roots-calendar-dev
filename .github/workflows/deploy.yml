@@ -24,7 +24,7 @@ jobs:
 
     - name: Clone public repo
       run: |
-        git clone https://x-access-token:${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/Ycaycepapa/roots-calendar.git deploy
+        git clone https://x-access-token:${{ secrets.PUBLIC_REPO_TOKEN }}@github.com/caycepapa/roots-calendar.git deploy
         rsync -av --delete ./ ./deploy/
         cd deploy
         git add .
