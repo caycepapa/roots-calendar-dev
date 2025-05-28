@@ -91,6 +91,17 @@ class CalendarPostView{
                         <a class="rc-all__controller__btn" name="allChangeBtn">一括変更</a>
                     </div>
                 </div>
+                <div class="rc-dayweek__controller">
+                    <div class="weekday-toggles-global">
+                        <?php
+                        $weekdays = array('日', '月', '火', '水', '木', '金', '土');
+                        foreach ($weekdays as $i => $day) {
+                            echo '<label><input type="checkbox" class="weekday-toggle-global" data-weekday="'.$i.'">'.$day.'</label> ';
+                        }
+                        ?>
+                    </div>
+                </div>   
+                <div class="rc-WeekdayChangeCheckbox" value=""></div>
                 <div name="cal_box">
                 </div>
             </div>
