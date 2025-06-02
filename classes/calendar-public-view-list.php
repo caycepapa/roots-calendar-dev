@@ -48,16 +48,12 @@ class CalendarPublicViewList{
 
             $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
 
-            $listdom .= '<li>';
-            $listdom .= '<div>'.date('n',strtotime($day)).'/'.date('j',strtotime($day)).'（'.$weekday.'）'.'</div>';
-
             if($balloonArray){
+                $listdom .= '<li class="event">';
+                $listdom .= '<div>'.date('n',strtotime($day)).'/'.date('j',strtotime($day)).'（'.$weekday.'）'.'</div>';
                 $listdom .= '<div>'.$balloonArray['rc_eve_balloon'].'</div>';
-            }else{
-                $listdom .= '<div>'.$rc_status_flg['state_txt'].'</div>';
+                $listdom .= '</li>';
             }
-
-            $listdom .= '</li>';
         }
 
         echo $listdom;
