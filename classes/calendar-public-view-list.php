@@ -34,7 +34,6 @@ class CalendarPublicViewList{
         $end   = date('Y-m-d', strtotime($today_year . $litnum_txt));
         $listdom = '';
 
-
         for ( $day = $start; $day <= $end; $day = date('Y-m-d', strtotime($day . '+1 day'))) {
             
             $date = date('Y',strtotime($day)).'-'.date('m',strtotime($day)). '-' . str_pad(date('j',strtotime($day)), 2, 0, STR_PAD_LEFT);
@@ -44,15 +43,13 @@ class CalendarPublicViewList{
 
             $balloonArray   = $this->create_balloon($date, $rc_events);
 
-            $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
-
-            $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
-
-            if($balloonArray){
+            if($balloonArray && $balloonArray['rc_eve_type'] !== ''){
                 $listdom .= '<li class="event">';
                 $listdom .= '<div>'.date('n',strtotime($day)).'/'.date('j',strtotime($day)).'（'.$weekday.'）'.'</div>';
                 $listdom .= '<div>'.$balloonArray['rc_eve_balloon'].'</div>';
                 $listdom .= '</li>';
+            }elseif($listnum == 0){
+                $listdom .= '<li class="noevent">本日のみのイベントはありません。</li>';
             }
         }
 
@@ -68,25 +65,43 @@ class CalendarPublicViewList{
             $rc_eve = $rc_events[$event_num];
             $rc_eve_array = json_decode($rc_eve['meta_value'],true);
             $rc_eve_balloon = '';
+            $rc_eve_type = '';
+            $rc_eve_btnclass = '';
+            $bg_color = '';
 
             for($i = 0; $i < count($rc_eve_array); $i++){
-                if($rc_eve_array[$i]['event_name'] !== '' && $rc_eve_array[$i]['event_url'] !== ''){
-                    $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
-                    $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
-                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                    $bg_color = $rc_eve_array[$i]['event_color'];
-                }elseif($rc_eve_array[$i]['event_url'] == ''){
-                    $rc_eve_balloon .= '<span>';
-                    $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
-                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                    $bg_color = $rc_eve_array[$i]['event_color'];
+                if($rc_eve_array[$i]['event_type'] == 'url'){
+                    if($rc_eve_array[$i]['event_name'] !== '' && $rc_eve_array[$i]['event_url'] !== ''){
+                        $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
+                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                        $bg_color = $rc_eve_array[$i]['event_color'];
+                    }elseif($rc_eve_array[$i]['event_url'] == ''){
+                        $rc_eve_balloon .= '<span>';
+                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                        $bg_color = $rc_eve_array[$i]['event_color'];
+                    }
+                    $rc_eve_type = 'url';
+                }elseif($rc_eve_array[$i]['event_type'] == 'post'){
+                    if($rc_eve_array[$i]['event_id'] !== '' && $rc_eve_array[$i]['event_name'] !== ''){
+                        $rc_eve_balloon .= '<a href="'.get_permalink($rc_eve_array[$i]['event_id']).'">';
+                        // event_idからevents-categoryを取得
+                        $rc_eve_balloon .= '<span class="rc_cal_event_category">'.get_the_terms($rc_eve_array[$i]['event_id'], 'events-category')[0]->name.'</span>';
+                        
+                        $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                        $bg_color = $rc_eve_array[$i]['event_color'];
+                    }
+                    $rc_eve_type = 'post';
                 }
             }
 
             $balloonArray = array(
                 'rc_eve_btnclass' => $rc_eve_btnclass,
                 'rc_eve_balloon' => $rc_eve_balloon,
-                'bg_color' => $bg_color
+                'bg_color' => $bg_color,
+                'rc_eve_type' => $rc_eve_type,
             );
 
             return $balloonArray;
