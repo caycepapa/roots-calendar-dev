@@ -58,6 +58,11 @@
   padding: 16px;
   position: relative;
 }
+@media screen and (max-width: 767px) {
+  .rc_cal_day_wrap {
+    padding: 8px;
+  }
+}
 
 .rc-calendar__label {
   display: none;

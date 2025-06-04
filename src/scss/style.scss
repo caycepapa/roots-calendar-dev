@@ -69,6 +69,10 @@
 .rc_cal_day_wrap{
     padding: 16px;
     position: relative;
+
+    @media screen and (max-width: 767px){
+        padding: 8px;
+    }
 }
 
 .rc-calendar__label{
