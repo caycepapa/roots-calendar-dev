@@ -79,3 +79,76 @@
   cursor: default;
   text-decoration: none;
 }
+
+.rc_cal_eventlist {
+  margin-top: 16px !important;
+  border-top: 1px solid #DDD;
+  margin-right: 16px;
+  margin-left: 16px;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+@media screen and (max-width: 767px) {
+  .rc_cal_eventlist {
+    margin-right: 0;
+    margin-left: 0;
+  }
+}
+
+.rc_events_list {
+  display: flex;
+  gap: 24px;
+  border-bottom: 1px solid #DDD;
+  padding-bottom: 16px;
+  padding-top: 16px;
+  margin-top: 0 !important;
+}
+@media screen and (max-width: 767px) {
+  .rc_events_list {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.rc_events_list_date {
+  flex-basis: 80px;
+  flex-shrink: 0;
+}
+@media screen and (max-width: 767px) {
+  .rc_events_list_date {
+    flex-basis: auto;
+    margin-bottom: 16px;
+  }
+}
+
+.rc_events_list_items {
+  flex-grow: 1;
+}
+.rc_events_list_items > * {
+  display: block;
+}
+
+.rc_cal_event_link {
+  display: flex !important;
+  align-items: flex-start;
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+.rc_cal_event_link div {
+  text-decoration: underline;
+  line-height: 1.6;
+}
+.rc_cal_event_link.is-hover div {
+  text-decoration: none;
+}
+
+.rc_cal_event_category {
+  background-color: #666;
+  color: #FFF;
+  border-radius: 9999px;
+  padding: 0 8px;
+  display: inline-block;
+  margin-right: 12px;
+  font-size: 12px;
+  white-space: nowrap;
+}
