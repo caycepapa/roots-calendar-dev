@@ -73,6 +73,39 @@ class CalendarSettingView{
             }
 
             /* 
+            公開月数保存処理と取得処理
+            ---------------------------------------------------------- */
+            global $wpdb;
+            $option_table = $wpdb->prefix . RC_Config::OPTION_TABLE;
+            $option_name = '公開月数';
+
+            // 保存処理
+            if (isset($_POST['option_value'][0])) {
+                $option_value = intval($_POST['option_value'][0]);
+                $existing = $wpdb->get_var(
+                    $wpdb->prepare("SELECT COUNT(*) FROM {$option_table} WHERE option_name = %s", $option_name)
+                );
+                if ($existing) {
+                    $wpdb->update(
+                        $option_table,
+                        ['option_value' => $option_value],
+                        ['option_name' => $option_name]
+                    );
+                } else {
+                    $wpdb->insert(
+                        $option_table,
+                        ['option_name' => $option_name, 'option_value' => $option_value]
+                    );
+                }
+            }
+
+            // 表示用取得
+            $howlong = $wpdb->get_row(
+                $wpdb->prepare("SELECT * FROM {$option_table} WHERE option_name = %s", $option_name)
+            );
+
+
+            /* 
             画面表示
             ---------------------------------------------- */
             $records = $wpdb->get_results("SELECT * FROM ".$table_name);
@@ -81,7 +114,9 @@ class CalendarSettingView{
             <div class="wrap">
                 <h1 class="wp-heading-inline">カレンダー設定</h1>
                 <hr class="wp-header-end">
-                <h2>新規登録</h2>
+                <h2>ステータス設定</h2>
+                <div class="rc-setting-nest">
+                <h3>新規登録</h3>
                 <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
                     <input type="text" name="state_name" value="">
                     <input type="color" name="state_color" value="">
@@ -93,7 +128,9 @@ class CalendarSettingView{
                     </select>
                     <input type="submit" value="追加">
                 </form>
-                <h2>一覧</h2>
+                </div>
+                <div class="rc-setting-nest">
+                <h3>一覧</h3>
                 <div>
                     <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
                     <?php
@@ -120,8 +157,33 @@ class CalendarSettingView{
                     </div>
                     </form>
                 </div>
+                </div>
+            </div>
+            <div class="wrap">
+                <hr class="wp-header-end">
+                <h2>公開月数</h2>
+                <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
+                    <select name="option_value[0]">
+                        <?php
+                            $selected_value = isset($howlong->option_value) ? intval($howlong->option_value) : 1;
+                            for ($i = 1; $i <= 12; $i++) {
+                                $selected = ($i === $selected_value) ? 'selected' : '';
+                                echo "<option value=\"{$i}\" {$selected}>{$i}</option>";
+                            }
+                        ?>
+                    </select>
+                    <input type="submit" value="更新">
+                </form>
+            </div>
+            <div class="wrap">
+                <hr class="wp-header-end">
+                <h2>イベント設定</h2>
+                <div class="rc-setting-nest">
+                    <h3>取得する投稿</h3>
+                </div>
             </div>
             <?php
         }
     }
 }
+

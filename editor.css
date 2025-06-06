@@ -201,3 +201,10 @@ input[type=checkbox] {
      -moz-appearance: none;
           appearance: none;
 }
+
+/*-----------------------------------------
+ネスト作成
+-----------------------------------------*/
+.rc-setting-nest {
+  margin-left: 3rem;
+}

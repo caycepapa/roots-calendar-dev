@@ -74,6 +74,33 @@ class CustomOptionTable {
 }
 
 /* 
+カスタム投稿追加
+---------------------------------------------- */
+function add_custom_post() {
+    register_post_type(
+        'events',
+        array(
+            'label' => 'イベント',
+            'public' => true,
+            'has_archive' => true,
+            'show_in_rest' => true,
+            'menu_position' => 5,
+            'hierarchical' => false,
+            'supports' => array(
+                'title',
+                'editor',
+                'thumbnail',
+                'revisions',
+                'excerpt',
+                'custom-fields',
+                'page-attributes',
+            )
+        )
+    );
+}
+add_action('init', 'add_custom_post');
+
+/* 
 メニュー表示
 ---------------------------------------------- */
 class setMenu {
@@ -241,12 +268,7 @@ class RootsCalendar{
         include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-setting-view.php' );
         new CalendarSettingView();
 
-        /* 
-        カレンダー設定画面表示
-        ---------------------------------------------- */
-        include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-option-view.php' );
-        new CalendarOptionView();
-
+       
         /* 
         カレンダー登録画面表示
         ---------------------------------------------- */
