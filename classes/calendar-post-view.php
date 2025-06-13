@@ -45,8 +45,18 @@ class CalendarPostView{
         echo '<script>var rc_events_array = '.$rc_events_array.'</script>';
 
 
-        // カスタム投稿 eventsを取得し、jsの配列へ
-        $sql_events_posts = "SELECT * FROM $wpdb->posts WHERE post_type = 'events' AND post_status = 'publish'";
+        // 投稿タイプ設定を取得
+        $option_table = $wpdb->prefix . RC_Config::OPTION_TABLE;
+        $post_type_row = $wpdb->get_row(
+            $wpdb->prepare("SELECT * FROM {$option_table} WHERE option_name = %s", 'rc_enabled_post_types')
+        );
+        $enabled_post_types = $post_type_row ? explode(',', $post_type_row->option_value) : ['events'];
+
+        $placeholders = implode(',', array_fill(0, count($enabled_post_types), '%s'));
+        $sql_events_posts = $wpdb->prepare(
+            "SELECT * FROM $wpdb->posts WHERE post_type IN ($placeholders) AND post_status = 'publish'",
+            ...$enabled_post_types
+        );
         $rc_events_posts = $wpdb->get_results($sql_events_posts, OBJECT);
         $rc_events_posts_array = json_encode($rc_events_posts, JSON_PRETTY_PRINT);
         echo '<script>var rc_events_posts_array = '.$rc_events_posts_array.'</script>';
@@ -83,6 +93,7 @@ class CalendarPostView{
                     </div>
                     <div>
                         <select name="allChangeSelect">
+                            <option value="">--</option>
                         <?php 
                             foreach($setting_records as $key => $value):
                         ?>

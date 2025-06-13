@@ -4,6 +4,19 @@ import * as create_modal_window from "./create-modal-window";
 
 export function createFunc(){
 
+    const enabledPostTypes = typeof rc_calendar_settings !== 'undefined' ? rc_calendar_settings.enabled_post_types : ['events'];
+    const bodyClasses = document.body.className;
+    let currentPostType = 'events'; // デフォルト値
+    const match = bodyClasses.match(/post-type-([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+        currentPostType = match[1];
+    }
+    if (!enabledPostTypes.includes(currentPostType)) {
+        console.warn('この投稿タイプではカレンダーは表示されません');
+        return;
+    }
+
+
     var calBox = document.getElementsByName('cal_box')[0];
 
     const week = ["日", "月", "火", "水", "木", "金", "土"];

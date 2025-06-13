@@ -100,6 +100,7 @@ function add_custom_post() {
 }
 add_action('init', 'add_custom_post');
 
+
 /* 
 メニュー表示
 ---------------------------------------------- */

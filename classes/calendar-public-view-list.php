@@ -60,72 +60,71 @@ class CalendarPublicViewList{
 
     }
 
-    function create_balloon($date,$rc_events){
+    function create_balloon($date, $rc_evemts) {
+        if (is_wp_error($rc_events) || !is_array($rc_events)) {
+            return false;
+        }
 
         $event_num = array_search('rc_events_'.$date, array_column($rc_events, 'meta_key'));
 
-        if(is_int($event_num)){
+        if (is_int($event_num)) {
             $rc_eve = $rc_events[$event_num];
-            $rc_eve_array = json_decode($rc_eve['meta_value'],true);
+            $rc_eve_array = json_decode($rc_eve['meta_value'], true);
             $rc_eve_balloon = '';
-            $rc_eve_type = '';
             $rc_eve_btnclass = '';
             $bg_color = '';
 
-            for($i = 0; $i < count($rc_eve_array); $i++){
-                if($rc_eve_array[$i]['event_type'] == 'url'){
-                    if($rc_eve_array[$i]['event_name'] !== '' && $rc_eve_array[$i]['event_url'] !== ''){
-                        $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'" class="rc_cal_event_link">';
-                        $rc_eve_balloon .= '<span class="rc_cal_event_category">その他イベント</span>';
-                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.$rc_eve_array[$i]['event_name'].'</div></a>';
-                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                        $bg_color = $rc_eve_array[$i]['event_color'];
-                    }elseif($rc_eve_array[$i]['event_url'] == ''){
-                        $rc_eve_balloon .= '<div class="rc_cal_event_link">';
-                        $rc_eve_balloon .= '<span class="rc_cal_event_category">その他のイベント</span>';
-                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.$rc_eve_array[$i]['event_name'].'</div></div>';
-                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                        $bg_color = $rc_eve_array[$i]['event_color'];
-                    }
-                    $rc_eve_type = 'url';
-                }elseif($rc_eve_array[$i]['event_type'] == 'post'){
-                    if($rc_eve_array[$i]['event_id'] !== '' && $rc_eve_array[$i]['event_name'] !== ''){
-                        $rc_eve_balloon .= '<a href="'.get_permalink($rc_eve_array[$i]['event_id']).'" class="rc_cal_event_link">';
-                        // event_idからevents-categoryを取得
-                        $rc_eve_catname = get_the_terms($rc_eve_array[$i]['event_id'], 'events-category')[0]->name;
+            for ($i = 0; $i < count($rc_eve_array); $i++) {
+            if ($rc_eve_array[$i]['event_type'] == 'url') {
+                if ($rc_eve_array[$i]['event_name'] !== '' && $rc_eve_array[$i]['event_url'] !== '') {
+                    $rc_eve_balloon .= '<a href="' . esc_url($rc_eve_array[$i]['event_url']) . '" class="rc_cal_event_link">';
+                    $rc_eve_balloon .= '<span class="rc_cal_event_category">その他イベント</span>';
+                    $rc_eve_balloon .= '<div class="rc_cal_event_name">' . esc_html($rc_eve_array[$i]['event_name']) . '</div></a>';
+                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                    $bg_color = $rc_eve_array[$i]['event_color'];
+                } elseif ($rc_eve_array[$i]['event_url'] == '') {
+                    $rc_eve_balloon .= '<div class="rc_cal_event_link">';
+                    $rc_eve_balloon .= '<span class="rc_cal_event_category">その他のイベント</span>';
+                    $rc_eve_balloon .= '<div class="rc_cal_event_name">' . esc_html($rc_eve_array[$i]['event_name']) . '</div></div>';
+                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                    $bg_color = $rc_eve_array[$i]['event_color'];
+                }
+                $rc_eve_type = 'url';
+            } elseif ($rc_eve_array[$i]['event_type'] == 'post') {
+                if ($rc_eve_array[$i]['event_id'] !== '' && $rc_eve_array[$i]['event_name'] !== '') {
+                    $rc_eve_balloon .= '<a href="' . get_permalink($rc_eve_array[$i]['event_id']) . '" class="rc_cal_event_link">';
 
-                        // カスタムフィールド event_color を取得
-                        // events-category idを取得
-                        $category_id = get_the_terms($rc_eve_array[$i]['event_id'], 'events-category')[0]->term_id;
-                        // カスタムフィールド event_color を取得
+                    // カテゴリーと色を取得（安全性向上）
+                    $terms = get_the_terms($rc_eve_array[$i]['event_id'], 'events-category');
+                    if (!is_wp_error($terms) && !empty($terms)) {
+                        $term = $terms[0];
+                        $rc_eve_catname = $term->name;
+                        $category_id = $term->term_id;
                         $event_color = get_term_meta($category_id, 'event_color', true);
-                        
 
-                        if($rc_eve_catname == 'スペースシアター（プラネタリウム）イベント'){
+                        if ($rc_eve_catname == 'スペースシアター（プラネタリウム）イベント') {
                             $rc_eve_catname = 'プラネイベント';
                         }
 
-                        $rc_eve_balloon .= '<span class="rc_cal_event_category" style="background-color:'.$event_color.'">'.$rc_eve_catname.'</span>';
-                        
-                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.$rc_eve_array[$i]['event_name'].'</div></a>';
-                        $rc_eve_btnclass = 'rc_cal_btn--hasevent';
-                        $bg_color = $rc_eve_array[$i]['event_color'];
+                        $rc_eve_balloon .= '<span class="rc_cal_event_category" style="background-color:' . esc_attr($event_color) . '">' . esc_html($rc_eve_catname) . '</span>';
                     }
-                    $rc_eve_type = 'post';
+
+                    $rc_eve_balloon .= '<div class="rc_cal_event_name">' . esc_html($rc_eve_array[$i]['event_name']) . '</div></a>';
+                    $rc_eve_btnclass = 'rc_cal_btn--hasevent';
+                    $bg_color = $rc_eve_array[$i]['event_color'];
                 }
+                $rc_eve_type = 'post';
             }
+        }
 
-            $balloonArray = array(
-                'rc_eve_btnclass' => $rc_eve_btnclass,
-                'rc_eve_balloon' => $rc_eve_balloon,
-                'bg_color' => $bg_color,
-                'rc_eve_type' => $rc_eve_type,
-            );
-
-            return $balloonArray;
-
-        }else{
-            return false;
+        return array(
+            'rc_eve_btnclass' => $rc_eve_btnclass,
+            'rc_eve_balloon' => $rc_eve_balloon,
+            'bg_color' => $bg_color,
+            'rc_eve_type' => $rc_eve_type,
+        );
+        } else {
+        return false;
         }
     }
 

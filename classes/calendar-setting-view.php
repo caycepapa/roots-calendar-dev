@@ -106,6 +106,54 @@ class CalendarSettingView{
 
 
             /* 
+            投稿タイプ保存処理と取得処理
+            ---------------------------------------------------------- */
+            global $wpdb;
+            $option_table = $wpdb->prefix . RC_Config::OPTION_TABLE;
+            $enabled_post_types_option = 'rc_enabled_post_types';
+
+            // 公開カスタム投稿タイプ
+            $all_post_types = get_post_types(['public' => true], 'objects');
+            $custom_post_types = array_filter($all_post_types, function($pt) {
+                return !in_array($pt->name, ['attachment', 'roots_calendar']);
+            });
+
+            // 保存処理
+            if (isset($_POST['enabled_post_types']) && is_array($_POST['enabled_post_types'])) {
+                $selected_post_types = array_map('sanitize_text_field', $_POST['enabled_post_types']);
+                $value = implode(',', $selected_post_types);
+
+                $existing = $wpdb->get_var(
+                    $wpdb->prepare("SELECT COUNT(*) FROM {$option_table} WHERE option_name = %s", $enabled_post_types_option)
+                );
+                if ($existing) {
+                    $wpdb->update(
+                        $option_table,
+                        ['option_value' => $value],
+                        ['option_name' => $enabled_post_types_option]
+                    );
+                } else {
+                    $wpdb->insert(
+                        $option_table,
+                        ['option_name' => $enabled_post_types_option, 'option_value' => $value]
+                    );
+                }
+            }
+
+            // 取得処理
+            $enabled_post_types_row = $wpdb->get_row(
+                $wpdb->prepare("SELECT * FROM {$option_table} WHERE option_name = %s", $enabled_post_types_option)
+            );
+            $enabled_post_types = $enabled_post_types_row ? explode(',', $enabled_post_types_row->option_value) : ['events'];
+
+            // スクリプトの読み込みとデータの渡し
+            wp_enqueue_script('roots-calendar-create-cal', plugin_dir_url(__FILE__) . '../js/create-cal.js', [], null, true);
+            wp_localize_script('roots-calendar-create-cal', 'rc_calendar_settings', [
+                'enabled_post_types' => $enabled_post_types,
+            ]);
+
+
+            /* 
             画面表示
             ---------------------------------------------- */
             $records = $wpdb->get_results("SELECT * FROM ".$table_name);
@@ -115,6 +163,20 @@ class CalendarSettingView{
                 <h1 class="wp-heading-inline">カレンダー設定</h1>
                 <hr class="wp-header-end">
                 <h2>ステータス設定</h2>
+                <div class="rc-setting-nest">
+                <h3>デフォルト</h3>
+                <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
+                    <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
+                    <input type="text" name="state_name" value="">
+                    <input type="color" name="state_color" value="">
+                    <input type="text" name="state_txt">
+                    <select name="state_mark">
+                        <option value="true">◯</option>
+                        <option value="false">✕</option>
+                        <option value="other">△</option>
+                    </select>
+                </form>
+                </div>
                 <div class="rc-setting-nest">
                 <h3>新規登録</h3>
                 <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
@@ -180,6 +242,16 @@ class CalendarSettingView{
                 <h2>イベント設定</h2>
                 <div class="rc-setting-nest">
                     <h3>取得する投稿</h3>
+                    <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
+                        <?php foreach ($custom_post_types as $post_type): ?>
+                            <label>
+                                <input type="checkbox" name="enabled_post_types[]" value="<?php echo esc_attr($post_type->name); ?>"
+                                    <?php checked(in_array($post_type->name, $enabled_post_types)); ?>>
+                                <?php echo esc_html($post_type->label); ?>
+                            </label><br>
+                        <?php endforeach; ?>
+                        <input type="submit" value="保存" style="margin-top: 1.0rem;">
+                    </form>
                 </div>
             </div>
             <?php
