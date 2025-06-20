@@ -31,10 +31,58 @@ class CalendarSettingView{
             global $wpdb;
             $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
 
+
+            /* 
+            初期ステータス
+            ---------------------------------------------- */
+
+            $has_initial = $wpdb->get_var("SELECT COUNT(*) FROM {$table_name}");
+
+            // ① 新規追加がある場合は、それを優先して処理（初期登録スキップ）
+            $has_post_insert = (
+                isset($_POST['state_name']) ||
+                isset($_POST['state_color']) ||
+                isset($_POST['state_mark']) ||
+                isset($_POST['state_txt'])
+            );
+
+            // ② デフォルトフォームから登録があれば、それを使用（上書き）
+            $has_default_post = isset($_POST['register_default_states']);
+
+            if (!$has_initial && !$has_post_insert) {
+                if ($has_default_post) {
+                    $default_states = $_POST['default_state'];
+                    $selected_index = intval($_POST['default_state_selected']);
+                    if (isset($default_states[$selected_index])) {
+                        $selected = $default_states[$selected_index];
+                        $wpdb->insert(
+                            $table_name,
+                            [
+                                'state_name' => $selected['state_name'],
+                                'state_color' => $selected['state_color'],
+                                'state_mark'  => $selected['state_mark'],
+                                'state_txt'   => $selected['state_txt'],
+                            ]
+                        );
+                    }
+                } else {
+                    // ③ 初期状態：最初から固定のデフォルトを入れる
+                    $wpdb->insert(
+                        $table_name,
+                        [
+                            'state_name' => '営業日',
+                            'state_color' => '#0000ff',
+                            'state_mark'  => 'true',
+                            'state_txt'   => '09:00 ~ 18:00',
+                        ]
+                    );
+                }
+            }
+
             /* 
             追加時実行
             ---------------------------------------------- */
-            if(isset($_POST['state_name']) || isset($_POST['state_color']) || isset($_POST['state_mark']) || isset($_POST['state_txt']) ){
+            if ($has_post_insert) {
                 $wpdb->insert(
                     $table_name,
                     array(
@@ -44,6 +92,29 @@ class CalendarSettingView{
                         'state_txt' => $_POST['state_txt'],
                     )
                 );
+            }
+
+            // デフォルトフォームからの登録（オプションとして保存のみ）
+            if ($has_default_post) {
+                $default_states = $_POST['default_state'];
+                $selected_index = intval($_POST['default_state_selected']);
+
+                update_option('rc_default_states', $default_states);
+                update_option('rc_default_state_selected', $selected_index);
+            }
+
+            $default_values = get_option('rc_default_states');
+            $selected_index = get_option('rc_default_state_selected');
+
+            if (!$default_values) {
+                $default_values = [
+                    ['state_name' => '営業日', 'state_color' => '#0000ff', 'state_mark' => 'true', 'state_txt' => '09:00 ~ 18:00'],
+                    ['state_name' => '休業日', 'state_color' => '#ff0000', 'state_mark' => 'false', 'state_txt' => '終日'],
+                    ['state_name' => 'イベント', 'state_color' => '#ffff00', 'state_mark' => 'other', 'state_txt' => '13:00 ~ 15:00'],
+                ];
+            }
+            if ($selected_index === false) {
+                $selected_index = 0;
             }
 
             /* 
@@ -164,17 +235,33 @@ class CalendarSettingView{
                 <hr class="wp-header-end">
                 <h2>ステータス設定</h2>
                 <div class="rc-setting-nest">
-                <h3>デフォルト</h3>
                 <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
-                    <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
-                    <input type="text" name="state_name" value="">
-                    <input type="color" name="state_color" value="">
-                    <input type="text" name="state_txt">
-                    <select name="state_mark">
-                        <option value="true">◯</option>
-                        <option value="false">✕</option>
-                        <option value="other">△</option>
-                    </select>
+                    <?php
+                    $default_values = [
+                        ['state_name' => '営業日', 'state_color' => '#0000ff', 'state_mark' => 'true', 'state_txt' => '09:00 ~ 18:00'],
+                        ['state_name' => '休業日', 'state_color' => '#ff0000', 'state_mark' => 'false', 'state_txt' => '終日'],
+                        ['state_name' => 'イベント', 'state_color' => '#ffff00', 'state_mark' => 'other', 'state_txt' => '13:00 ~ 15:00'],
+                    ];
+                    foreach ($default_values as $i => $def):
+                    ?>
+                        <div class="rc-state-form">
+                            <input type="text" name="default_state[<?php echo $i; ?>][state_name]" value="<?php echo esc_attr($def['state_name']); ?>">
+                            <input type="color" name="default_state[<?php echo $i; ?>][state_color]" value="<?php echo esc_attr($def['state_color']); ?>">
+                            <input type="text" name="default_state[<?php echo $i; ?>][state_txt]" value="<?php echo esc_attr($def['state_txt']); ?>">
+                            <select name="default_state[<?php echo $i; ?>][state_mark]">
+                                <option value="true" <?php selected($def['state_mark'], 'true'); ?>>◯</option>
+                                <option value="false" <?php selected($def['state_mark'], 'false'); ?>>✕</option>
+                                <option value="other" <?php selected($def['state_mark'], 'other'); ?>>△</option>
+                            </select>
+                            <label>
+                                <input type="radio" name="default_state_selected" value="<?php echo $i; ?>" <?php checked($i === $selected_index); ?>>
+                                デフォルトステータス
+                            </label>
+                        </div>
+                    <?php endforeach; ?>
+                    <div>
+                        <input type="submit" name="register_default_states" value="更新">
+                    </div>
                 </form>
                 </div>
                 <div class="rc-setting-nest">
