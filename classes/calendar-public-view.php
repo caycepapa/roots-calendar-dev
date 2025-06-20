@@ -182,12 +182,19 @@ class CalendarPublicView{
 
             $date = $year.'-'.$month. '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
 
-            $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
-            $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
+            $rc_date_index = array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'));
 
-            if(!empty($rc_date['meta_value'])){
-                $bg_color = $rc_status_flg['state_color'];
-            }else{
+            if ($rc_date_index !== false) {
+                $rc_date = $rc_status[$rc_date_index];
+                $rc_status_flg_index = array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'));
+
+                if ($rc_status_flg_index !== false) {
+                    $rc_status_flg = $setting_records[$rc_status_flg_index];
+                    $bg_color = $rc_status_flg['state_color'];
+                } else {
+                    $bg_color = "#FFF";
+                }
+            } else {
                 $bg_color = "#FFF";
             }
 

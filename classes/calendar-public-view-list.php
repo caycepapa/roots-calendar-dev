@@ -60,7 +60,7 @@ class CalendarPublicViewList{
 
     }
 
-    function create_balloon($date, $rc_evemts) {
+    function create_balloon($date, $rc_events) {
         if (is_wp_error($rc_events) || !is_array($rc_events)) {
             return false;
         }

@@ -147,7 +147,7 @@ class CalendarSettingView{
             $enabled_post_types = $enabled_post_types_row ? explode(',', $enabled_post_types_row->option_value) : ['events'];
 
             // スクリプトの読み込みとデータの渡し
-            wp_enqueue_script('roots-calendar-create-cal', plugin_dir_url(__FILE__) . '../js/create-cal.js', [], null, true);
+            wp_enqueue_script('roots-calendar-create-cal', plugin_dir_url(__FILE__) . '../editor.js', [], null, true);
             wp_localize_script('roots-calendar-create-cal', 'rc_calendar_settings', [
                 'enabled_post_types' => $enabled_post_types,
             ]);
@@ -258,4 +258,3 @@ class CalendarSettingView{
         }
     }
 }
-

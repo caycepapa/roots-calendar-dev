@@ -24,11 +24,20 @@ class CalendarPublicViewDay{
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
         $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name , ARRAY_A);
 
-        $rc_status_flg = $setting_records[array_search($rc_today_status, array_column($setting_records, 'state_name'))];
+        if (!empty($rc_status)) {
+        $rc_today_status = $rc_status[0]['meta_value'];
 
-        echo '<div class="rc-cal-day__mark g-today__status rc-cal-day__mark--'.$rc_status_flg['state_mark'].'">'.$rc_status_flg['state_name'].'</div>';
-        echo '<div class="rc-cal-day__txt">'.$rc_status_flg['state_txt'].'</div>';
-        
+        $index = array_search($rc_today_status, array_column($setting_records, 'state_name'));
+        if ($index !== false) {
+            $rc_status_flg = $setting_records[$index];
+
+            echo '<div class="rc-cal-day__mark g-today__status rc-cal-day__mark--'.$rc_status_flg['state_mark'].'">'.$rc_status_flg['state_name'].'</div>';
+            echo '<div class="rc-cal-day__txt">'.$rc_status_flg['state_txt'].'</div>';
+        } else {
+            echo '<div class="rc-cal-day__txt">設定された状態が見つかりません</div>';
+        }
+        } else {
+            echo '<div class="rc-cal-day__txt">本日の状態は未設定です</div>';
+        }
     }
-
 }
