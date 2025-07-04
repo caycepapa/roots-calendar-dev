@@ -46,38 +46,6 @@ class CalendarSettingView{
                 isset($_POST['state_txt'])
             );
 
-            // ② デフォルトフォームから登録があれば、それを使用（上書き）
-            $has_default_post = isset($_POST['register_default_states']);
-
-            if (!$has_initial && !$has_post_insert) {
-                if ($has_default_post) {
-                    $default_states = $_POST['default_state'];
-                    $selected_index = intval($_POST['default_state_selected']);
-                    if (isset($default_states[$selected_index])) {
-                        $selected = $default_states[$selected_index];
-                        $wpdb->insert(
-                            $table_name,
-                            [
-                                'state_name' => $selected['state_name'],
-                                'state_color' => $selected['state_color'],
-                                'state_mark'  => $selected['state_mark'],
-                                'state_txt'   => $selected['state_txt'],
-                            ]
-                        );
-                    }
-                } else {
-                    // ③ 初期状態：最初から固定のデフォルトを入れる
-                    $wpdb->insert(
-                        $table_name,
-                        [
-                            'state_name' => '営業日',
-                            'state_color' => '#0000ff',
-                            'state_mark'  => 'true',
-                            'state_txt'   => '09:00 ~ 18:00',
-                        ]
-                    );
-                }
-            }
 
             /* 
             追加時実行
@@ -94,28 +62,6 @@ class CalendarSettingView{
                 );
             }
 
-            // デフォルトフォームからの登録（オプションとして保存のみ）
-            if ($has_default_post) {
-                $default_states = $_POST['default_state'];
-                $selected_index = intval($_POST['default_state_selected']);
-
-                update_option('rc_default_states', $default_states);
-                update_option('rc_default_state_selected', $selected_index);
-            }
-
-            $default_values = get_option('rc_default_states');
-            $selected_index = get_option('rc_default_state_selected');
-
-            if (!$default_values) {
-                $default_values = [
-                    ['state_name' => '営業日', 'state_color' => '#0000ff', 'state_mark' => 'true', 'state_txt' => '09:00 ~ 18:00'],
-                    ['state_name' => '休業日', 'state_color' => '#ff0000', 'state_mark' => 'false', 'state_txt' => '終日'],
-                    ['state_name' => 'イベント', 'state_color' => '#ffff00', 'state_mark' => 'other', 'state_txt' => '13:00 ~ 15:00'],
-                ];
-            }
-            if ($selected_index === false) {
-                $selected_index = 0;
-            }
 
             /* 
             更新
@@ -140,6 +86,10 @@ class CalendarSettingView{
                             array( 'id' =>  $cal_setting['state_id']) 
                         );
                     }
+                }
+                // デフォルトステータス（ラジオボタン）の保存
+                if (isset($_POST['default_state_selected'])) {
+                    update_option('rc_default_state_selected', intval($_POST['default_state_selected']));
                 }
             }
 
@@ -235,36 +185,6 @@ class CalendarSettingView{
                 <hr class="wp-header-end">
                 <h2>ステータス設定</h2>
                 <div class="rc-setting-nest">
-                <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
-                    <?php
-                    $default_values = [
-                        ['state_name' => '営業日', 'state_color' => '#0000ff', 'state_mark' => 'true', 'state_txt' => '09:00 ~ 18:00'],
-                        ['state_name' => '休業日', 'state_color' => '#ff0000', 'state_mark' => 'false', 'state_txt' => '終日'],
-                        ['state_name' => 'イベント', 'state_color' => '#ffff00', 'state_mark' => 'other', 'state_txt' => '13:00 ~ 15:00'],
-                    ];
-                    foreach ($default_values as $i => $def):
-                    ?>
-                        <div class="rc-state-form">
-                            <input type="text" name="default_state[<?php echo $i; ?>][state_name]" value="<?php echo esc_attr($def['state_name']); ?>">
-                            <input type="color" name="default_state[<?php echo $i; ?>][state_color]" value="<?php echo esc_attr($def['state_color']); ?>">
-                            <input type="text" name="default_state[<?php echo $i; ?>][state_txt]" value="<?php echo esc_attr($def['state_txt']); ?>">
-                            <select name="default_state[<?php echo $i; ?>][state_mark]">
-                                <option value="true" <?php selected($def['state_mark'], 'true'); ?>>◯</option>
-                                <option value="false" <?php selected($def['state_mark'], 'false'); ?>>✕</option>
-                                <option value="other" <?php selected($def['state_mark'], 'other'); ?>>△</option>
-                            </select>
-                            <label>
-                                <input type="radio" name="default_state_selected" value="<?php echo $i; ?>" <?php checked($i === $selected_index); ?>>
-                                デフォルトステータス
-                            </label>
-                        </div>
-                    <?php endforeach; ?>
-                    <div>
-                        <input type="submit" name="register_default_states" value="更新">
-                    </div>
-                </form>
-                </div>
-                <div class="rc-setting-nest">
                 <h3>新規登録</h3>
                 <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
                     <input type="text" name="state_name" value="">
@@ -284,7 +204,8 @@ class CalendarSettingView{
                     <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
                     <?php
                         $records = json_decode(json_encode($records), true);
-                        foreach($records as $record):
+                        $selected_index = intval(get_option('rc_default_state_selected', 0));
+                        foreach($records as $index => $record):
                     ?>
                             <div>
                                 <input type="text" name="cal_setting[<?php echo $record['id'];?>][state_name]" value="<?php echo $record['state_name'];?>">
@@ -297,6 +218,11 @@ class CalendarSettingView{
                                 </select>
                                 <input type="hidden" name="cal_setting[<?php echo $record['id'];?>][state_id]" value="<?php echo $record['id'];?>">
                                 <label><input type="checkbox" name="cal_setting[<?php echo $record['id'];?>][delete]">削除</label>
+                                <label>
+                                    <input type="radio" name="default_state_selected" value="<?php echo $index; ?>"
+                                        <?php echo ($index === $selected_index) ? 'checked' : ''; ?>>
+                                    デフォルト
+                                </label>
                             </div>
                     <?php
                         endforeach;

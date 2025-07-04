@@ -10,7 +10,6 @@ class CalendarPostView{
     }
     
     function rc_create_custom_fields(){
-
         add_meta_box(
             'rc_calset',
             '休日・イベント設定',
@@ -22,7 +21,6 @@ class CalendarPostView{
     }
     
     function rc_calset_form($post){
-
         wp_nonce_field('custom_field_save_meta_box_data', 'custom_field_meta_box_nonce');
 
         global $wpdb;
@@ -36,14 +34,12 @@ class CalendarPostView{
         // rc_eventsをphpの配列からjsの配列へ
         $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post->ID." AND meta_key LIKE 'rc_events_%'";
         $rc_events = $wpdb->get_results($sql_events, OBJECT);
-        // シングルクウォートのエスケープを取り除く
         foreach ($rc_events as &$event) {
             $event->meta_value = str_replace("\\'", "&#39;", $event->meta_value);
             $event->meta_value = str_replace('\\"', "&quot;", $event->meta_value);
         }
         $rc_events_array = json_encode($rc_events, JSON_PRETTY_PRINT);
         echo '<script>var rc_events_array = '.$rc_events_array.'</script>';
-
 
         // 投稿タイプ設定を取得
         $option_table = $wpdb->prefix . RC_Config::OPTION_TABLE;
@@ -61,30 +57,29 @@ class CalendarPostView{
         $rc_events_posts_array = json_encode($rc_events_posts, JSON_PRETTY_PRINT);
         echo '<script>var rc_events_posts_array = '.$rc_events_posts_array.'</script>';
 
-        // setting
+        // setting（ステータス設定）を取得
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
         $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name);
         $setting_records_array = json_encode($setting_records,JSON_PRETTY_PRINT);
         echo '<script>var setting_records_array = '.$setting_records_array.'</script>';
 
+        // rc_default_statuses を配列形式で渡す
+        $default_index = intval(get_option('rc_default_state_selected', 0));
+        $all_statuses = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY id ASC");
+
+        $default_statuses = [];
+        if ($all_statuses && isset($all_statuses[$default_index])) {
+            $default_statuses[] = $all_statuses[$default_index];
+        }
+
+        echo '<script>var rc_default_statuses = '.json_encode($default_statuses).';</script>';
+
         $month  = '2';
         $year   = '2022';
 
-        if($month == ''){
-            $this_month = date("m");
-        }else{
-            $this_month = $month;
-        }
-
-        if($year == ''){
-            $this_year  = date("Y");
-        }else{
-            $this_year = $year;
-        }
-
-        // その月の日数
+        $this_month = $month ?: date("m");
+        $this_year = $year ?: date("Y");
         $this_day = date('t');
-
         ?>
             <div name="cal_container">
                 <div class="rc-all__controller">
@@ -94,15 +89,11 @@ class CalendarPostView{
                     <div>
                         <select name="allChangeSelect">
                             <option value="">--</option>
-                        <?php 
-                            foreach($setting_records as $key => $value):
-                        ?>
+                        <?php foreach($setting_records as $key => $value): ?>
                             <option value="<?php echo $setting_records[$key]->state_name;?>">
-                            <?php echo $setting_records[$key]->state_name; ?>
+                                <?php echo $setting_records[$key]->state_name; ?>
                             </option>
-                        <?php
-                            endforeach;
-                        ?>
+                        <?php endforeach; ?>
                         </select>
                     </div>
                     <div>
@@ -120,41 +111,29 @@ class CalendarPostView{
                     </div>
                 </div>   
                 <div class="rc-WeekdayChangeCheckbox" value=""></div>
-                <div name="cal_box">
-                </div>
+                <div name="cal_box"></div>
             </div>
         <?php
     }
 
-
-    /* 
-    データ保存
-    ---------------------------------------------- */
     function save_custom_fields($post_id){
-
         if (!isset($_POST['custom_field_meta_box_nonce'])) {
             return;
         }
-
         if (!wp_verify_nonce($_POST['custom_field_meta_box_nonce'], 'custom_field_save_meta_box_data')) {
             return;
         }
-
         foreach($_POST as $key => $value){
             if(preg_match('/rc_events_/', $key)){
                 $data = json_encode($_POST[$key], JSON_UNESCAPED_UNICODE);
                 update_post_meta($post_id, $key , $data);
             }elseif(preg_match('/rc_status_/', $key)){
                 $data = sanitize_text_field($_POST[$key]);
-
                 if(get_post_meta($post_id, $key)){
                     delete_post_meta($post_id, $key);
                 }
-                
                 update_post_meta($post_id, $key , $data);
             }
         }
-
     }
-
 }

@@ -195,7 +195,15 @@ class CalendarPublicView{
                     $bg_color = "#FFF";
                 }
             } else {
-                $bg_color = "#FFF";
+                // ステータスが設定されていない場合はデフォルトステータスを使う
+                $default_index = intval(get_option('rc_default_state_selected', 0));
+                if (isset($setting_records[$default_index])) {
+                    $default_status = $setting_records[$default_index];
+                    $bg_color = $default_status['state_color'];
+                    // 必要なら他のプロパティもここで使えます
+                } else {
+                    $bg_color = "#FFF";
+                }
             }
 
             $balloonArray   = $this->create_balloon($date, $rc_events);
