@@ -65,11 +65,11 @@ export default function(){
         }
 
         var targetLabel = nextTable.nextElementSibling;
-        set_ttl(targetLabel.innerText, container);
+        set_ttl(targetLabel.innerHTML, container);
     }
 
-    var set_ttl = (ttlTxt, container) => {
+    var set_ttl = (ttlHtml, container) => {
         var ttl_dom = container.querySelectorAll('[name="rcCalendarMonthTtl"]');
-        ttl_dom.forEach(dom => dom.innerText = ttlTxt);
+        ttl_dom.forEach(dom => dom.innerHTML = ttlHtml);
     }
 }
