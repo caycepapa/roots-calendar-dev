@@ -194,3 +194,10 @@
   color: #FFF;
   background: #2060A0;
 }
+
+input[type=checkbox] {
+  margin: 0;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}

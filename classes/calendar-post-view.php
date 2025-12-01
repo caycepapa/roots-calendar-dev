@@ -44,6 +44,13 @@ class CalendarPostView{
         $rc_events_array = json_encode($rc_events, JSON_PRETTY_PRINT);
         echo '<script>var rc_events_array = '.$rc_events_array.'</script>';
 
+
+        // カスタム投稿 eventsを取得し、jsの配列へ
+        $sql_events_posts = "SELECT * FROM $wpdb->posts WHERE post_type = 'events' AND post_status = 'publish'";
+        $rc_events_posts = $wpdb->get_results($sql_events_posts, OBJECT);
+        $rc_events_posts_array = json_encode($rc_events_posts, JSON_PRETTY_PRINT);
+        echo '<script>var rc_events_posts_array = '.$rc_events_posts_array.'</script>';
+
         // setting
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
         $setting_records = $wpdb->get_results("SELECT * FROM ".$table_name);

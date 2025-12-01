@@ -103,13 +103,22 @@ class CalendarPublicView{
                 for($i = 0; $i < count($rc_eve_array); $i++){
                     if($rc_eve_array[$i]['event_name'] !== ''){
                         $hasValidEvent = true;
-                        if($rc_eve_array[$i]['event_url'] !== ''){
-                            $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
-                            $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+
+                        if($rc_eve_array[$i]['event_type'] == 'url'){
+                            if($rc_eve_array[$i]['event_url'] !== ''){
+                                $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
+                                $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                            }else{
+                                $rc_eve_balloon .= '<span>';
+                                $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+                            }
                         }else{
-                            $rc_eve_balloon .= '<span>';
-                            $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+                            if($rc_eve_array[$i]['event_id'] !== ''){
+                                $rc_eve_balloon .= '<a href="'.get_permalink($rc_eve_array[$i]['event_id']).'">';
+                                $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                            }
                         }
+                        
                         $rc_eve_btnclass = 'rc_cal_btn--hasevent';
                         $bg_color = $rc_eve_array[$i]['event_color'];
                     }
