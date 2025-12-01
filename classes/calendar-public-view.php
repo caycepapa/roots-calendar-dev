@@ -59,7 +59,7 @@ class CalendarPublicView{
                         }
                     ?>
                 </table>
-                <div class="rc-calendar__label" name="rcCalendarLabel"><?php echo $today_year.'年';?><?php echo $montha.'月';?></div>
+                <div class="rc-calendar__label" name="rcCalendarLabel"><span class="year"><?php echo $today_year;?></span><span class="month"><?php echo $montha;?></span></div>
             <?php
 
             if($today_month >= 12){
