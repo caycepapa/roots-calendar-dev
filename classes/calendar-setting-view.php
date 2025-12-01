@@ -30,62 +30,146 @@ class CalendarSettingView{
 
             global $wpdb;
             $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
+            $option_table_name = $wpdb->prefix . RC_Config::OPTION_TABLE;
 
-            /* 
+            /*
+            公開月数の更新
+            ---------------------------------------------- */
+            if(isset($_POST['option_value'])){
+                // CSRF対策: nonce検証
+                if(!isset($_POST['rc_setting_nonce']) || !wp_verify_nonce($_POST['rc_setting_nonce'], 'rc_setting_action')){
+                    wp_die( __( 'Security check failed.' ) );
+                }
+
+                $option_records = $wpdb->get_results("SELECT * FROM ".$option_table_name);
+                $howlong_exists = false;
+                if(!empty($option_records)){
+                    foreach($option_records as $opt){
+                        if($opt->option_name === '公開月数'){
+                            $howlong_exists = true;
+                            break;
+                        }
+                    }
+                }
+
+                if($howlong_exists){
+                    $wpdb->update(
+                        $option_table_name,
+                        array(
+                            'option_name' => '公開月数',
+                            'option_value' => intval($_POST['option_value'])
+                        ),
+                        array('option_name' => '公開月数')
+                    );
+                }else{
+                    $wpdb->insert(
+                        $option_table_name,
+                        array(
+                            'option_name' => '公開月数',
+                            'option_value' => intval($_POST['option_value']),
+                        )
+                    );
+                }
+            }
+
+            /*
             追加時実行
             ---------------------------------------------- */
             if(isset($_POST['state_name']) || isset($_POST['state_color']) || isset($_POST['state_mark']) || isset($_POST['state_txt']) ){
+                // CSRF対策: nonce検証
+                if(!isset($_POST['rc_setting_nonce']) || !wp_verify_nonce($_POST['rc_setting_nonce'], 'rc_setting_action')){
+                    wp_die( __( 'Security check failed.' ) );
+                }
+                // 入力値をサニタイズ
                 $wpdb->insert(
                     $table_name,
                     array(
-                        'state_name' => $_POST['state_name'],
-                        'state_color' => $_POST['state_color'],
-                        'state_mark' => $_POST['state_mark'],
-                        'state_txt' => $_POST['state_txt'],
+                        'state_name' => sanitize_text_field($_POST['state_name']),
+                        'state_color' => sanitize_hex_color($_POST['state_color']),
+                        'state_mark' => sanitize_text_field($_POST['state_mark']),
+                        'state_txt' => sanitize_text_field($_POST['state_txt']),
                     )
                 );
             }
 
-            /* 
+            /*
             更新
             ---------------------------------------------- */
             if(isset($_POST['cal_setting'])){
+                // CSRF対策: nonce検証
+                if(!isset($_POST['rc_setting_nonce']) || !wp_verify_nonce($_POST['rc_setting_nonce'], 'rc_setting_action')){
+                    wp_die( __( 'Security check failed.' ) );
+                }
                 $cal_settings = $_POST['cal_setting'];
                 foreach($cal_settings as $cal_setting){
+                    // IDを整数に変換
+                    $state_id = intval($cal_setting['state_id']);
                     if(isset($cal_setting['delete']) && $cal_setting['delete']){
                         $wpdb->delete(
                             $table_name,
-                            array( 'id' =>  $cal_setting['state_id']) 
+                            array( 'id' => $state_id)
                         );
                     }else{
                         $wpdb->update(
                             $table_name,
                             array(
-                                'state_name' => $cal_setting['state_name'],
-                                'state_color' => $cal_setting['state_color'],
-                                'state_mark' => $cal_setting['state_mark'],
-                                'state_txt' => $cal_setting['state_txt'],
+                                'state_name' => sanitize_text_field($cal_setting['state_name']),
+                                'state_color' => sanitize_hex_color($cal_setting['state_color']),
+                                'state_mark' => sanitize_text_field($cal_setting['state_mark']),
+                                'state_txt' => sanitize_text_field($cal_setting['state_txt']),
                             ),
-                            array( 'id' =>  $cal_setting['state_id']) 
+                            array( 'id' => $state_id)
                         );
                     }
                 }
             }
 
-            /* 
+            /*
             画面表示
             ---------------------------------------------- */
             $records = $wpdb->get_results("SELECT * FROM ".$table_name);
+
+            // 公開月数を取得
+            $option_records = $wpdb->get_results("SELECT * FROM ".$option_table_name);
+            $howlong = null;
+            if(!empty($option_records)){
+                foreach($option_records as $opt){
+                    if($opt->option_name === '公開月数'){
+                        $howlong = $opt;
+                        break;
+                    }
+                }
+            }
 
             ?>
             <div class="wrap">
                 <h1 class="wp-heading-inline">カレンダー設定</h1>
                 <hr class="wp-header-end">
-                <h2>新規登録</h2>
-                <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
-                    <input type="text" name="state_name" value="">
+
+                <h2>公開月数</h2>
+                <form action='edit.php?post_type=<?php echo esc_attr(RC_Config::NAME);?>&page=<?php echo esc_attr(RC_Config::SETTING_NAME);?>' method='POST'>
+                    <?php wp_nonce_field('rc_setting_action', 'rc_setting_nonce'); ?>
+                    公開月数：
+                    <select name="option_value">
+                        <?php
+                            for($i = 1; $i <= 12; $i++){
+                                $selected = (isset($howlong->option_value) && $howlong->option_value == $i) ? 'selected' : ($i == 1 && !isset($howlong->option_value) ? 'selected' : '');
+                                echo '<option value="'.esc_attr($i).'" '.$selected.'>'.esc_html($i).'</option>';
+                            }
+                        ?>
+                    </select>
+                    <input type="submit" value="更新">
+                </form>
+
+                <hr style="margin: 30px 0;">
+
+                <h2>ステータス</h2>
+                <h4>ステータス追加</h4>
+                <form action='edit.php?post_type=<?php echo esc_attr(RC_Config::NAME);?>&page=<?php echo esc_attr(RC_Config::SETTING_NAME);?>' method='POST'>
+                    <?php wp_nonce_field('rc_setting_action', 'rc_setting_nonce'); ?>
+                    <input type="text" name="state_name" value="" placeholder="ステータス名">
                     <input type="color" name="state_color" value="">
-                    <input type="text" name="state_txt">
+                    <input type="text" name="state_txt" placeholder="説明テキスト">
                     <select name="state_mark">
                         <option value="true">◯</option>
                         <option value="false">✕</option>
@@ -93,24 +177,25 @@ class CalendarSettingView{
                     </select>
                     <input type="submit" value="追加">
                 </form>
-                <h2>一覧</h2>
+                <h4>ステータス一覧</h4>
                 <div>
-                    <form action='edit.php?post_type=<?php echo RC_Config::NAME;?>&page=<?php echo RC_Config::SETTING_NAME;?>' method='POST'>
+                    <form action='edit.php?post_type=<?php echo esc_attr(RC_Config::NAME);?>&page=<?php echo esc_attr(RC_Config::SETTING_NAME);?>' method='POST'>
+                    <?php wp_nonce_field('rc_setting_action', 'rc_setting_nonce'); ?>
                     <?php
                         $records = json_decode(json_encode($records), true);
                         foreach($records as $record):
                     ?>
                             <div>
-                                <input type="text" name="cal_setting[<?php echo $record['id'];?>][state_name]" value="<?php echo $record['state_name'];?>">
-                                <input type="color" name="cal_setting[<?php echo $record['id'];?>][state_color]" value="<?php echo $record['state_color'];?>">
-                                <input type="text" name="cal_setting[<?php echo $record['id'];?>][state_txt]" value="<?php echo $record['state_txt'];?>">
-                                <select name="cal_setting[<?php echo $record['id'];?>][state_mark]" id="">
+                                <input type="text" name="cal_setting[<?php echo esc_attr($record['id']);?>][state_name]" value="<?php echo esc_attr($record['state_name']);?>">
+                                <input type="color" name="cal_setting[<?php echo esc_attr($record['id']);?>][state_color]" value="<?php echo esc_attr($record['state_color']);?>">
+                                <input type="text" name="cal_setting[<?php echo esc_attr($record['id']);?>][state_txt]" value="<?php echo esc_attr($record['state_txt']);?>">
+                                <select name="cal_setting[<?php echo esc_attr($record['id']);?>][state_mark]" id="">
                                     <option value="true" <?php echo $record['state_mark'] == 'true' ? 'selected': '' ?>>◯</option>
                                     <option value="false" <?php echo $record['state_mark'] == 'false' ? 'selected': '' ?>>✕</option>
                                     <option value="other" <?php echo $record['state_mark'] == 'other' ? 'selected': '' ?>>△</option>
                                 </select>
-                                <input type="hidden" name="cal_setting[<?php echo $record['id'];?>][state_id]" value="<?php echo $record['id'];?>">
-                                <label><input type="checkbox" name="cal_setting[<?php echo $record['id'];?>][delete]">削除</label>
+                                <input type="hidden" name="cal_setting[<?php echo esc_attr($record['id']);?>][state_id]" value="<?php echo esc_attr($record['id']);?>">
+                                <label><input type="checkbox" name="cal_setting[<?php echo esc_attr($record['id']);?>][delete]">削除</label>
                             </div>
                     <?php
                         endforeach;

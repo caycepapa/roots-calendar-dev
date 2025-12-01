@@ -167,32 +167,67 @@ class RootsCalendar{
             }
         }
 
-        /* 
+        /*
         ショートコード作成
         ---------------------------------------------- */
         function roots_calendar_key_func($atts){
+            // 属性のデフォルト値設定とバリデーション
+            $atts = shortcode_atts(array(
+                'num' => 0,
+            ), $atts, 'roots-calendar-key');
+
+            // 入力バリデーション: 整数に変換
+            $post_id = intval($atts['num']);
+            if($post_id <= 0) {
+                return '';
+            }
+
             include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-public-view.php' );
             $calendar = new CalendarPublicView();
             ob_start();
-            echo $calendar->rc_calset_form($atts['num']);
+            echo $calendar->rc_calset_form($post_id);
             return ob_get_clean();
         }
         add_shortcode('roots-calendar-key','roots_calendar_key_func');
 
         function roots_calendar_key_day_func($atts){
+            // 属性のデフォルト値設定とバリデーション
+            $atts = shortcode_atts(array(
+                'num' => 0,
+            ), $atts, 'roots-calendar-key-day');
+
+            // 入力バリデーション: 整数に変換
+            $post_id = intval($atts['num']);
+            if($post_id <= 0) {
+                return '';
+            }
+
             include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-public-view-day.php' );
             $calendar = new CalendarPublicViewDay();
             ob_start();
-            echo $calendar->rc_calset_form($atts['num']);
+            echo $calendar->rc_calset_form($post_id);
             return ob_get_clean();
         }
         add_shortcode('roots-calendar-key-day','roots_calendar_key_day_func');
 
         function roots_calendar_key_list_func($atts){
+            // 属性のデフォルト値設定とバリデーション
+            $atts = shortcode_atts(array(
+                'num' => 0,
+                'listnum' => 10,
+            ), $atts, 'roots-calendar-key-list');
+
+            // 入力バリデーション: 整数に変換
+            $post_id = intval($atts['num']);
+            $listnum = intval($atts['listnum']);
+            if($post_id <= 0) {
+                return '';
+            }
+
             include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-public-view-list.php' );
             $calendar = new CalendarPublicViewList();
             ob_start();
-            echo $calendar->rc_calset_form($atts['num'],$atts['listnum']);
+            echo $calendar->rc_calset_form($post_id, $listnum);
             return ob_get_clean();
         }
         add_shortcode('roots-calendar-key-list','roots_calendar_key_list_func');
@@ -235,19 +270,13 @@ class RootsCalendar{
         }
         add_action('wp_enqueue_scripts','rc_load_style');
 
-        /* 
+        /*
         カレンダー設定画面表示
         ---------------------------------------------- */
         include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-setting-view.php' );
         new CalendarSettingView();
 
-        /* 
-        カレンダー設定画面表示
-        ---------------------------------------------- */
-        include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-option-view.php' );
-        new CalendarOptionView();
-
-        /* 
+        /*
         カレンダー登録画面表示
         ---------------------------------------------- */
         include_once( plugin_dir_path( __FILE__ ) . 'classes/calendar-post-view.php' );

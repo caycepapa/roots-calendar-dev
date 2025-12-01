@@ -106,16 +106,16 @@ class CalendarPublicView{
 
                         if($rc_eve_array[$i]['event_type'] == 'url'){
                             if($rc_eve_array[$i]['event_url'] !== ''){
-                                $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'">';
-                                $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                                $rc_eve_balloon .= '<a href="'.esc_url($rc_eve_array[$i]['event_url']).'">';
+                                $rc_eve_balloon .= esc_html($rc_eve_array[$i]['event_name']).'</a>';
                             }else{
                                 $rc_eve_balloon .= '<span>';
-                                $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</span>';
+                                $rc_eve_balloon .= esc_html($rc_eve_array[$i]['event_name']).'</span>';
                             }
                         }else{
                             if($rc_eve_array[$i]['event_id'] !== ''){
-                                $rc_eve_balloon .= '<a href="'.get_permalink($rc_eve_array[$i]['event_id']).'">';
-                                $rc_eve_balloon .= $rc_eve_array[$i]['event_name'].'</a>';
+                                $rc_eve_balloon .= '<a href="'.esc_url(get_permalink(intval($rc_eve_array[$i]['event_id']))).'">';
+                                $rc_eve_balloon .= esc_html($rc_eve_array[$i]['event_name']).'</a>';
                             }
                         }
                         
@@ -144,16 +144,27 @@ class CalendarPublicView{
     function create_calendar($post_id,$year,$month){
         global $wpdb;
 
-        /* 
+        // post_idを整数に変換（SQLインジェクション対策）
+        $post_id = intval($post_id);
+
+        /*
         status取得
         ---------------------------------------------- */
-        $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_status_%'";
+        $sql_status = $wpdb->prepare(
+            "SELECT * FROM $wpdb->postmeta WHERE post_id = %d AND meta_key LIKE %s",
+            $post_id,
+            'rc_status_%'
+        );
         $rc_status = $wpdb->get_results($sql_status , ARRAY_A);
 
-        /* 
+        /*
         events取得
         ---------------------------------------------- */
-        $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_events_%'";
+        $sql_events = $wpdb->prepare(
+            "SELECT * FROM $wpdb->postmeta WHERE post_id = %d AND meta_key LIKE %s",
+            $post_id,
+            'rc_events_%'
+        );
         $rc_events = $wpdb->get_results($sql_events , ARRAY_A);
 
         /* 
@@ -209,7 +220,7 @@ class CalendarPublicView{
                     $rc_eve_balloon  = '';
                 }
 				
-				$week .= '<td class="rc_cal_day '. $today_flg .$rc_eve_btnclass .'" data='.$date.' style="background-color:'.$bg_color.'"><div class="rc_cal_day_wrap"><p>' . $day . '</p>' . $rc_eve_balloon . '</div>';
+				$week .= '<td class="rc_cal_day '. esc_attr($today_flg . $rc_eve_btnclass) .'" data="'.esc_attr($date).'" style="background-color:'.esc_attr($bg_color).'"><div class="rc_cal_day_wrap"><p>' . esc_html($day) . '</p>' . $rc_eve_balloon . '</div>';
                 
             }
             $week .= '</td>';

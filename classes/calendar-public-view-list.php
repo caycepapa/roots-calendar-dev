@@ -7,16 +7,28 @@ class CalendarPublicViewList{
     function rc_calset_form($post_id,$listnum){
         global $wpdb;
 
-        /* 
+        // post_idとlistnumを整数に変換（SQLインジェクション対策）
+        $post_id = intval($post_id);
+        $listnum = intval($listnum);
+
+        /*
         status取得
         ---------------------------------------------- */
-        $sql_status = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_status_%'";
+        $sql_status = $wpdb->prepare(
+            "SELECT * FROM $wpdb->postmeta WHERE post_id = %d AND meta_key LIKE %s",
+            $post_id,
+            'rc_status_%'
+        );
         $rc_status = $wpdb->get_results($sql_status , ARRAY_A);
 
-        /* 
+        /*
         events取得
         ---------------------------------------------- */
-        $sql_events = "SELECT * FROM $wpdb->postmeta WHERE post_id =".$post_id." AND meta_key LIKE 'rc_events_%'";
+        $sql_events = $wpdb->prepare(
+            "SELECT * FROM $wpdb->postmeta WHERE post_id = %d AND meta_key LIKE %s",
+            $post_id,
+            'rc_events_%'
+        );
         $rc_events = $wpdb->get_results($sql_events , ARRAY_A);
 
         /* 
@@ -75,39 +87,41 @@ class CalendarPublicViewList{
             for($i = 0; $i < count($rc_eve_array); $i++){
                 if($rc_eve_array[$i]['event_type'] == 'url'){
                     if($rc_eve_array[$i]['event_name'] !== '' && $rc_eve_array[$i]['event_url'] !== ''){
-                        $rc_eve_balloon .= '<a href="'.$rc_eve_array[$i]['event_url'].'" class="rc_cal_event_link">';
+                        $rc_eve_balloon .= '<a href="'.esc_url($rc_eve_array[$i]['event_url']).'" class="rc_cal_event_link">';
                         $rc_eve_balloon .= '<span class="rc_cal_event_category">その他イベント</span>';
-                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.$rc_eve_array[$i]['event_name'].'</div></a>';
+                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.esc_html($rc_eve_array[$i]['event_name']).'</div></a>';
                         $rc_eve_btnclass = 'rc_cal_btn--hasevent';
                         $bg_color = $rc_eve_array[$i]['event_color'];
                     }elseif($rc_eve_array[$i]['event_url'] == ''){
                         $rc_eve_balloon .= '<div class="rc_cal_event_link">';
                         $rc_eve_balloon .= '<span class="rc_cal_event_category">その他のイベント</span>';
-                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.$rc_eve_array[$i]['event_name'].'</div></div>';
+                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.esc_html($rc_eve_array[$i]['event_name']).'</div></div>';
                         $rc_eve_btnclass = 'rc_cal_btn--hasevent';
                         $bg_color = $rc_eve_array[$i]['event_color'];
                     }
                     $rc_eve_type = 'url';
                 }elseif($rc_eve_array[$i]['event_type'] == 'post'){
                     if($rc_eve_array[$i]['event_id'] !== '' && $rc_eve_array[$i]['event_name'] !== ''){
-                        $rc_eve_balloon .= '<a href="'.get_permalink($rc_eve_array[$i]['event_id']).'" class="rc_cal_event_link">';
+                        $event_id = intval($rc_eve_array[$i]['event_id']);
+                        $rc_eve_balloon .= '<a href="'.esc_url(get_permalink($event_id)).'" class="rc_cal_event_link">';
                         // event_idからevents-categoryを取得
-                        $rc_eve_catname = get_the_terms($rc_eve_array[$i]['event_id'], 'events-category')[0]->name;
+                        $terms = get_the_terms($event_id, 'events-category');
+                        $rc_eve_catname = ($terms && !is_wp_error($terms)) ? $terms[0]->name : '';
 
                         // カスタムフィールド event_color を取得
                         // events-category idを取得
-                        $category_id = get_the_terms($rc_eve_array[$i]['event_id'], 'events-category')[0]->term_id;
+                        $category_id = ($terms && !is_wp_error($terms)) ? $terms[0]->term_id : 0;
                         // カスタムフィールド event_color を取得
                         $event_color = get_term_meta($category_id, 'event_color', true);
-                        
+
 
                         if($rc_eve_catname == 'スペースシアター（プラネタリウム）イベント'){
                             $rc_eve_catname = 'プラネイベント';
                         }
 
-                        $rc_eve_balloon .= '<span class="rc_cal_event_category" style="background-color:'.$event_color.'">'.$rc_eve_catname.'</span>';
-                        
-                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.$rc_eve_array[$i]['event_name'].'</div></a>';
+                        $rc_eve_balloon .= '<span class="rc_cal_event_category" style="background-color:'.esc_attr($event_color).'">'.esc_html($rc_eve_catname).'</span>';
+
+                        $rc_eve_balloon .= '<div class="rc_cal_event_name">'.esc_html($rc_eve_array[$i]['event_name']).'</div></a>';
                         $rc_eve_btnclass = 'rc_cal_btn--hasevent';
                         $bg_color = $rc_eve_array[$i]['event_color'];
                     }
