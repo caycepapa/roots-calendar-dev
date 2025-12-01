@@ -81,25 +81,25 @@ class setMenu {
         function rc_add_page() {
 
             $labels = array(
-                'name'               => 'Calendar',
-                'singular_name'      => 'Calendar',
-                'add_new'            => 'Add New',
-                'add_new_item'       => 'Add New Calendar',
-                'edit_item'          => 'Edit Calendar',
-                'new_item'           => 'New Calendar',
-                'all_items'          => 'All Calendar',
-                'view_item'          => 'View Calendar',
-                'search_items'       => 'Search Calendar',
-                'not_found'          => 'No Calendar found',
-                'not_found_in_trash' => 'No Calendar found in Trash',
+                'name'               => 'カレンダー',
+                'singular_name'      => 'カレンダー',
+                'add_new'            => '新規追加',
+                'add_new_item'       => '新規カレンダーを追加',
+                'edit_item'          => 'カレンダーを編集',
+                'new_item'           => '新規カレンダー',
+                'all_items'          => 'すべてのカレンダー',
+                'view_item'          => 'カレンダーを表示',
+                'search_items'       => 'カレンダーを検索',
+                'not_found'          => 'カレンダーが見つかりませんでした',
+                'not_found_in_trash' => 'ゴミ箱にカレンダーは見つかりませんでした',
                 'parent_item_colon'  => '',
-                'menu_name'          => 'Calendar'
+                'menu_name'          => 'カレンダー'
             );
 
             register_post_type( RC_Config::NAME ,
                 array(
                     'public' => true,
-                    'label' => 'Calendar',
+                    'label' => 'カレンダー',
                     'show_in_rest' => false,
                     'supports' => array(
                         'title',
