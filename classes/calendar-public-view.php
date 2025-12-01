@@ -34,7 +34,7 @@ class CalendarPublicView{
         echo '<div class="rc-calendar__wrap" name="rcCalendarWrap">';
         echo '<div class="rc-calendar__header">';
         echo '<a class="rc-calendar__btn is-blank" name="rcPrevBtn">&lt;前の月</a>';
-        echo '<h3 class="mb-5" name="rcCalendarMonthTtl">'.$today_year.'年'.$montha.'月</h3>';
+        echo '<h3 class="mb-5" name="rcCalendarMonthTtl"><span class="year">'.$today_year.'</span><span class="month">'.$montha.'月</span></h3>';
         echo '<a class="rc-calendar__btn '. $lastBlank .'" name="rcNextBtn">次の月&gt;</a>';
         echo '</div>';
 
