@@ -62,19 +62,29 @@ export function createFunc(){
                 }
 
                 var selectCreate = function(rc_statelist,year,month,day){
-                    let option_list = '<option value="">--</option>';
                     let status_name = 'rc_status_' + year + "-" + month + "-" + day;
-                    let target_date = rc_status_array.find((v) => v.meta_key === status_name);
 
+                    // グローバルデフォルト値を取得（文字列）
+                    let defaultValue = '';
+                    if(typeof rc_default_status !== 'undefined' && rc_default_status){
+                        defaultValue = rc_default_status;
+                    }
+
+                    // 例外登録があるか確認
+                    let target_date = rc_status_array.find((v) => v.meta_key === status_name);
+                    let currentValue = target_date ? target_date.meta_value : defaultValue;
+
+                    // 例外登録があるかどうかを判定（視覚的な区別用）
+                    let isException = target_date && target_date.meta_value !== '' && target_date.meta_value !== defaultValue;
+                    let selectClass = isException ? 'rc_status_selectbtn rc_status_selectbtn--exception' : 'rc_status_selectbtn';
+
+                    let option_list = '<option value="">--</option>';
                     for(let i = 0; i < rc_statelist.length; i++){
-                        let selected_txt = '';
-                        if(target_date){
-                            selected_txt = (target_date.meta_value == rc_statelist[i].state_name)? 'selected' : '';
-                        }
+                        let selected_txt = (currentValue == rc_statelist[i].state_name) ? 'selected' : '';
                         option_list += '<option value="'+rc_statelist[i].state_name+'"'+ selected_txt +'>'+rc_statelist[i].state_name+'</option>';
                     }
-                    
-                    return "<select class='rc_status_selectbtn' name='"+ status_name +"'>" + option_list + "</select>";
+
+                    return "<select class='"+ selectClass +"' name='"+ status_name +"' data-default='"+ defaultValue +"'>" + option_list + "</select>";
                 }
 
                 var eventCreate = function(year,month,day){

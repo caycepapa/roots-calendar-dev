@@ -141,6 +141,19 @@ class CalendarPublicView{
     }
 
 
+    /**
+     * グローバルデフォルトステータスを取得
+     */
+    static function get_global_default_status(){
+        global $wpdb;
+        $option_table_name = $wpdb->prefix . RC_Config::OPTION_TABLE;
+        $result = $wpdb->get_row($wpdb->prepare(
+            "SELECT option_value FROM $option_table_name WHERE option_name = %s",
+            'デフォルトステータス'
+        ));
+        return $result ? $result->option_value : '';
+    }
+
     function create_calendar($post_id,$year,$month){
         global $wpdb;
 
@@ -148,7 +161,12 @@ class CalendarPublicView{
         $post_id = intval($post_id);
 
         /*
-        status取得
+        グローバルデフォルトステータス取得
+        ---------------------------------------------- */
+        $default_status = self::get_global_default_status();
+
+        /*
+        例外status取得（個別登録分のみ）
         ---------------------------------------------- */
         $sql_status = $wpdb->prepare(
             "SELECT * FROM $wpdb->postmeta WHERE post_id = %d AND meta_key LIKE %s",
@@ -167,7 +185,7 @@ class CalendarPublicView{
         );
         $rc_events = $wpdb->get_results($sql_events , ARRAY_A);
 
-        /* 
+        /*
         status設定取得
         ---------------------------------------------- */
         $table_name = $wpdb->prefix . RC_Config::SETTING_TABLE;
@@ -176,10 +194,10 @@ class CalendarPublicView{
         $youbi = date('w', mktime(0, 0, 0, $month, 1, $year));
         $day_count = date('t', strtotime($year.'-'.$month.'-01'));
 
-        /* 
+        /*
         カレンダー生成
         ---------------------------------------------- */
-        
+
         $weeks              = [];
         $week               = '';
 
@@ -193,11 +211,26 @@ class CalendarPublicView{
 
             $date = $year.'-'.$month. '-' . str_pad($day, 2, 0, STR_PAD_LEFT);
 
-            $rc_date = $rc_status[array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'))];
-            $rc_status_flg = $setting_records[array_search($rc_date['meta_value'], array_column($setting_records, 'state_name'))];
+            // まず例外登録をチェック
+            $exception_index = array_search('rc_status_'.$date, array_column($rc_status, 'meta_key'));
+            $status_value = '';
 
-            if(!empty($rc_date['meta_value'])){
-                $bg_color = $rc_status_flg['state_color'];
+            if($exception_index !== false){
+                // 例外登録がある場合はそちらを優先
+                $status_value = $rc_status[$exception_index]['meta_value'];
+            }elseif(!empty($default_status)){
+                // グローバルデフォルト設定を使用
+                $status_value = $default_status;
+            }
+
+            // ステータスの色を取得
+            if(!empty($status_value)){
+                $status_index = array_search($status_value, array_column($setting_records, 'state_name'));
+                if($status_index !== false){
+                    $bg_color = $setting_records[$status_index]['state_color'];
+                }else{
+                    $bg_color = "#FFF";
+                }
             }else{
                 $bg_color = "#FFF";
             }

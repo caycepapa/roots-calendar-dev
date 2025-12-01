@@ -201,3 +201,12 @@ input[type=checkbox] {
      -moz-appearance: none;
           appearance: none;
 }
+
+/*-----------------------------------------
+例外登録（デフォルトと異なるステータス）
+-----------------------------------------*/
+.rc_status_selectbtn--exception {
+  background: #fff3cd !important;
+  border: 2px solid #ffc107 !important;
+  font-weight: bold;
+}

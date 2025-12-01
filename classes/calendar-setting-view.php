@@ -73,6 +73,48 @@ class CalendarSettingView{
             }
 
             /*
+            デフォルトステータスの更新
+            ---------------------------------------------- */
+            if(isset($_POST['default_status'])){
+                // CSRF対策: nonce検証
+                if(!isset($_POST['rc_setting_nonce']) || !wp_verify_nonce($_POST['rc_setting_nonce'], 'rc_setting_action')){
+                    wp_die( __( 'Security check failed.' ) );
+                }
+
+                $option_records = $wpdb->get_results("SELECT * FROM ".$option_table_name);
+                $default_exists = false;
+                if(!empty($option_records)){
+                    foreach($option_records as $opt){
+                        if($opt->option_name === 'デフォルトステータス'){
+                            $default_exists = true;
+                            break;
+                        }
+                    }
+                }
+
+                $default_status_value = sanitize_text_field($_POST['default_status']);
+
+                if($default_exists){
+                    $wpdb->update(
+                        $option_table_name,
+                        array(
+                            'option_name' => 'デフォルトステータス',
+                            'option_value' => $default_status_value
+                        ),
+                        array('option_name' => 'デフォルトステータス')
+                    );
+                }else{
+                    $wpdb->insert(
+                        $option_table_name,
+                        array(
+                            'option_name' => 'デフォルトステータス',
+                            'option_value' => $default_status_value,
+                        )
+                    );
+                }
+            }
+
+            /*
             追加時実行
             ---------------------------------------------- */
             if(isset($_POST['state_name']) || isset($_POST['state_color']) || isset($_POST['state_mark']) || isset($_POST['state_txt']) ){
@@ -132,11 +174,14 @@ class CalendarSettingView{
             // 公開月数を取得
             $option_records = $wpdb->get_results("SELECT * FROM ".$option_table_name);
             $howlong = null;
+            $default_status = null;
             if(!empty($option_records)){
                 foreach($option_records as $opt){
                     if($opt->option_name === '公開月数'){
                         $howlong = $opt;
-                        break;
+                    }
+                    if($opt->option_name === 'デフォルトステータス'){
+                        $default_status = $opt;
                     }
                 }
             }
@@ -159,6 +204,30 @@ class CalendarSettingView{
                         ?>
                     </select>
                     <input type="submit" value="更新">
+                </form>
+
+                <hr style="margin: 30px 0;">
+
+                <h2>デフォルトステータス</h2>
+                <p>カレンダーで何も設定していない日に表示されるステータスを選択してください。</p>
+                <form action='edit.php?post_type=<?php echo esc_attr(RC_Config::NAME);?>&page=<?php echo esc_attr(RC_Config::SETTING_NAME);?>' method='POST'>
+                    <?php wp_nonce_field('rc_setting_action', 'rc_setting_nonce'); ?>
+                    <select name="default_status" style="min-width: 200px;">
+                        <option value="">-- 未設定 --</option>
+                        <?php foreach($records as $record): ?>
+                            <option value="<?php echo esc_attr($record->state_name); ?>"
+                                <?php selected(isset($default_status->option_value) ? $default_status->option_value : '', $record->state_name); ?>
+                                style="background-color: <?php echo esc_attr($record->state_color); ?>">
+                                <?php echo esc_html($record->state_name); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <input type="submit" value="更新">
+                    <?php if(isset($default_status->option_value) && $default_status->option_value !== ''): ?>
+                        <span style="margin-left: 10px; padding: 4px 8px; background: #e7f3ff; border-radius: 4px;">
+                            現在の設定: <strong><?php echo esc_html($default_status->option_value); ?></strong>
+                        </span>
+                    <?php endif; ?>
                 </form>
 
                 <hr style="margin: 30px 0;">
